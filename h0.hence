@@ -1,0 +1,92 @@
+[Standard Hence Library]
+[Copyright 2010-2012 Andrew J. Baker]
+
+and
+    lcall "and"
+
+call
+    lcall "call"
+
+concatenate
+    lcall "concatenate"
+
+depth
+    lcall "depth"
+
+drop
+    lcall "drop"
+
+if
+    lcall "if"
+
+json_rpc
+    lcall "json_rpc"
+
+less_than
+    lcall "less_than"
+
+not
+    lcall "not"
+
+or
+    lcall "or"
+
+pick
+    lcall "pick"
+
+print
+    lcall "print"
+
+rotate
+    lcall "rotate"
+
+subtract
+    lcall "subtract"
+
+swap
+    lcall "swap"
+
+target
+    lcall "target"
+
+_
+    [Synthesised functions]
+
+add
+    subtract subtract swap "0" swap
+
+append
+    concatenate swap
+
+decrement
+    subtract "1"
+
+duplicate
+    pick "0"
+
+equal
+    not subtract
+
+false
+    "0"
+
+greater_than
+    and not equal rotate rotate less_than not swap pick "2" pick "0"
+
+greater_than_or_equal
+    not less_than
+
+increment
+    add "1"
+
+less_than_or_equal
+    not greater_than
+
+not_equal
+    not equal
+
+print_line
+    print "\n" print
+
+true
+    "1"

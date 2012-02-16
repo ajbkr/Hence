@@ -1,0 +1,421 @@
+#!/usr/bin/php -q
+<?php
+define('FUNCTION_PREFIX', 'xyzzy_');
+define('DEFAULT_TARGET', 'php');
+
+$generate = array(
+    'emit_function' => array(
+        'c'   => function($name, $functions) {
+            if (count($functions) > 1) {
+                echo '}', PHP_EOL;
+                echo PHP_EOL;
+            }
+
+            echo 'void ' . FUNCTION_PREFIX . $name . '(void)', PHP_EOL;
+            echo '{', PHP_EOL;
+        },
+        'js'  => function($name, $functions) {
+            if (count($functions) > 1) {
+                echo '};', PHP_EOL;
+                echo PHP_EOL;
+            }
+
+            echo 'var ' . FUNCTION_PREFIX . $name . ' = function() {', PHP_EOL;
+        },
+        'php' => function($name, $functions) {
+            if (count($functions) > 1) {
+                echo '}', PHP_EOL;
+                echo PHP_EOL;
+            }
+
+            echo 'function ' . FUNCTION_PREFIX . $name . '()', PHP_EOL;
+            echo '{', PHP_EOL;
+        }
+    ),
+
+    'emit_function_call' => array(
+        'c'   => function($name) {
+            if ($name == 'lcall') {
+                echo '    __lcall__();', PHP_EOL;
+            } else {
+                echo '    ' . FUNCTION_PREFIX . $name . '();', PHP_EOL;
+            }
+        },
+        'js'  => function($name) {
+            if ($name == 'lcall') {
+                echo '    libhence.__lcall__();', PHP_EOL;
+            } else {
+                echo '    ' . FUNCTION_PREFIX . $name . '();', PHP_EOL;
+            }
+        },
+        'php' => function($name) {
+            if ($name == 'lcall') {
+                echo '    __lcall__();', PHP_EOL;
+            } else {
+                echo '    ' . FUNCTION_PREFIX . $name . '();', PHP_EOL;
+            }
+        }
+    ),
+
+    'emit_push' => array(
+        'c'   => function($string) {
+            echo '    __push__("' . $string . '");', PHP_EOL;
+        },
+        'js'  => function($string) {
+            echo '    libhence.__push__("' . $string . '");', PHP_EOL;
+        },
+        'php' => function($string) {
+            echo '    __push__("' . $string . '");', PHP_EOL;
+        }
+    ),
+
+    'emit_comment' => array(
+        'c'   => function($comment) {
+            echo '    /* ' . $comment . ' */', PHP_EOL;
+        },
+        'js'  => function($comment) {
+            echo '    // ' . $comment, PHP_EOL;
+        },
+        'php' => function($comment) {
+            echo '    // ' . $comment, PHP_EOL;
+        }
+    ),
+
+    'emit_preamble' => array(
+        'c'   => function() {
+            echo '#include "libhence.h"', PHP_EOL;
+            echo PHP_EOL;
+        },
+        'js'  => function() {
+            echo "var libhence = require('./libhence');", PHP_EOL;
+            echo PHP_EOL;
+        },
+        'php' => function() {
+            echo '<?php', PHP_EOL;
+            echo "require_once 'libhence.php';", PHP_EOL;
+            echo PHP_EOL;
+        }
+    ),
+
+    'emit_postscript' => array(
+        'c'   => function($functions) {
+            if (count($functions) > 0) {
+                echo '}', PHP_EOL;
+                echo PHP_EOL;
+            }
+
+            echo 'struct Function Functions[] = {', PHP_EOL;
+            for ($i = 0; $i < count($functions); ++$i) {
+                echo '    { "' . $functions[$i] . '", ' .
+                    FUNCTION_PREFIX . $functions[$i] . ' },', PHP_EOL;
+            }
+            echo '    { NULL, NULL }', PHP_EOL;
+            echo '};', PHP_EOL;
+            echo PHP_EOL;
+
+            echo '/* entry point */', PHP_EOL;
+            echo 'int main(void)', PHP_EOL;
+            echo '{', PHP_EOL;
+            echo '    ' . FUNCTION_PREFIX . $functions[count($functions) - 1] .
+                '();', PHP_EOL;
+            echo PHP_EOL;
+
+            echo '    __depth__();', PHP_EOL;
+            echo '    return ((int) strtol(__pop__(), NULL, 10) > 0) ?',
+                PHP_EOL;
+            echo '        ((int) strtol(__pop__(), NULL, 10)) : (0);', PHP_EOL;
+            echo '}', PHP_EOL;
+        },
+        'js'  => function($functions) {
+            if (count($functions) > 0) {
+                echo '};', PHP_EOL;
+                echo PHP_EOL;
+            }
+
+            echo 'Functions = {', PHP_EOL;
+            for ($i = 0; $i < count($functions) - 1; ++$i) {
+                echo "    '" . $functions[$i] . "': " .
+                    FUNCTION_PREFIX . $functions[$i] . ",", PHP_EOL;
+            }
+            echo "    '" . $functions[count($functions) - 1] . "': " .
+                FUNCTION_PREFIX . $functions[count($functions) - 1], PHP_EOL;
+            echo '};', PHP_EOL;
+            echo PHP_EOL;
+
+            echo '// entry point', PHP_EOL;
+            echo FUNCTION_PREFIX . $functions[count($functions) - 1] .
+                '();', PHP_EOL;
+            echo PHP_EOL;
+
+            echo 'libhence.__depth__();', PHP_EOL;
+            echo 'process.exit((libhence.__pop__() | 0 > 0) ? ' .
+                '(libhence.__pop__() | 0) : (0));', PHP_EOL;
+        },
+        'php' => function($functions) {
+            if (count($functions) > 0) {
+                echo '}', PHP_EOL;
+                echo PHP_EOL;
+            }
+
+            echo '$Functions = array(', PHP_EOL;
+            for ($i = 0; $i < count($functions) - 1; ++$i) {
+                echo "    '" . $functions[$i] . "' => '" .
+                    FUNCTION_PREFIX . $functions[$i] . "',", PHP_EOL;
+            }
+            echo "    '" . $functions[count($functions) - 1] . "' => '" .
+                FUNCTION_PREFIX . $functions[count($functions) - 1] . "'",
+                PHP_EOL;
+            echo ');', PHP_EOL;
+            echo PHP_EOL;
+
+            echo '// entry point', PHP_EOL;
+            echo FUNCTION_PREFIX . $functions[count($functions) - 1] .
+                '();', PHP_EOL;
+            echo PHP_EOL;
+
+            echo '__depth__();', PHP_EOL;
+            echo 'exit((int) (__pop__() > 0) ? ((int) __pop__()) : ' .
+                '(0));', PHP_EOL;
+        }
+    )
+);
+
+function syntax_error($line_no) {
+    file_put_contents('php://stderr', 'Syntax error on line ' . $line_no .
+        PHP_EOL);
+    exit(1);
+}
+
+function main($argc, $argv)
+{
+    global $generate;
+
+    $shortopts = '';
+    $shortopts .= 't:';		// target
+
+    $longopts = array(
+        'target:'
+    );
+
+    $options = getopt($shortopts, $longopts);
+
+    $target = DEFAULT_TARGET;
+
+    foreach (array_keys($options) as $option) {
+        switch ($option) {
+        case 't':
+        case 'target':
+            switch ($options[$option]) {
+            case 'c':
+            case 'js':
+            case 'php':
+                $target = $options[$option];
+                break;
+            default:
+                file_put_contents('php://stderr', "Invalid target: '" .
+                    $options[$option] . "'" . PHP_EOL);
+                exit(1);
+            }
+            break;
+        default:
+            file_put_contents('php://stderr', "Unrecognised option: '" .
+                $option . "'" . PHP_EOL);
+            exit(1);
+        }
+    }
+
+    if (empty($target)) {
+        file_put_contents('php://stderr', 'No target specified' . PHP_EOL);
+        exit(1);
+    }
+
+    foreach ($options as $option => $value) {
+        while ($k = array_search('-' . $option . $value, $argv)) {
+            if ($k) {
+                unset($argv[$k]);
+            }
+        }
+
+        while ($k = array_search('-' . $option, $argv)) {
+            if ($k) {
+                unset($argv[$k]);
+                unset($argv[$k + 1]);
+            }
+        }
+
+        while ($k = array_search('--' . $option . '=' . $value, $argv)) {
+            if ($k) {
+                unset($argv[$k]);
+            }
+        }
+
+        while ($k = array_search('--' . $option, $argv)) {
+            if ($k) {
+                unset($argv[$k]);
+                unset($argv[$k + 1]);
+            }
+        }
+    }
+    $argv = array_merge($argv);
+
+    if (count($argv) < 2) {
+        file_put_contents('php://stderr', 'No input file(s) specified' .
+            PHP_EOL);
+        exit(1);
+    }
+
+    $functions = array();
+
+    $in_function = FALSE;
+
+    if (count($argv) > 1) {
+        $generate['emit_preamble'][$target]();
+    }
+
+    for ($argn = 1; $argn < count($argv); ++$argn) {
+        $source_code = file_get_contents($argv[$argn]);
+
+        $source_code_array = explode(PHP_EOL, $source_code);
+
+        $in_comment = $in_qstring = FALSE;
+
+        for ($line_no = 0; $line_no < count($source_code_array); ++$line_no) {
+            $line = $source_code_array[$line_no];
+
+            $stack = array();
+
+            $token = '';
+
+            $in_function_declaration = FALSE;
+
+            for ($i = 0; $i < strlen($line); ++$i) {
+                $c = $line{$i};
+
+                switch ($c) {
+                case '[':
+                    if ($in_function_declaration) {
+                        $in_function_declaration = FALSE;
+                        $in_function = TRUE;
+                        $functions[] = $token;
+                        $generate['emit_function'][$target]($token,
+                            $functions);
+                        $in_comment = TRUE;
+                        $token = $c;
+                    } else if ( !$in_comment) {
+                        $in_comment = TRUE;
+                        $token .= $c;
+                    } else {
+                        $token .= $c;
+                    }
+                    break;
+                case ']':
+                    if ($in_function_declaration) {
+                        syntax_error($line_no + 1);
+                    } else if ($in_comment) {
+                        $in_comment = FALSE;
+                        $token .= $c;
+                        $stack[] = $token;
+                        $token = '';
+                    } else if ($in_qstring) {
+                        $token .= $c;
+                    } else {
+                        syntax_error($line_no + 1);
+                    }
+                    break;
+                case '"':
+                    if ($in_function_declaration) {
+                        $in_function_declaration = FALSE;
+                        $in_function = TRUE;
+                        $functions[] = $token;
+                        $generate['emit_function'][$target]($token,
+                            $functions);
+                        $in_qstring = TRUE;
+                        $token = $c;
+                    } else if ( !$in_comment) {
+                        if ( !$in_qstring) {
+                            $in_qstring = TRUE;
+                            $token .= $c;
+                        } else {
+                            $in_qstring = FALSE;
+                            $token .= $c;
+                            $stack[] = $token;
+                            $token = '';
+                        }
+                    } else {
+                        $token .= $c;
+                    }
+                    break;
+                case ' ':
+                    if ($in_function_declaration) {
+                        $in_function_declaration = FALSE;
+                        $in_function = TRUE;
+                        $functions[] = $token;
+                        $generate['emit_function'][$target]($token);
+                        $token = '';
+                    } else if ($in_comment || $in_qstring) {
+                        $token .= $c;
+                    } else if (strlen($token) > 0) {
+                        $stack[] = $token;
+                        $token = '';
+                    }
+                    break;
+                default:
+                    if ($i == 0) {
+                        if (stripos('_ABCDEFGHIJKLMNOPQRSTUVWXYZ', $c) !==
+                            FALSE) {
+                            $in_function_declaration = TRUE;
+                            $token .= $c;
+                        } else {
+                            syntax_error($line_no + 1);
+                        }
+                    } else if ($in_function_declaration) {
+                        if (stripos('0123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                            $c) !== FALSE) {
+                            $token .= $c;
+                        } else {
+                            syntax_error($line_no + 1);
+                        }
+                    } else {
+                        $token .= $c;
+                    }
+                }
+            }
+            if ($in_function_declaration) {
+                $in_function_declaration = FALSE;
+                $in_function = TRUE;
+                $functions[] = $token;
+                $generate['emit_function'][$target]($token, $functions);
+            } else {
+                if (strlen($token) > 0) {
+                    $stack[] = $token;
+                }
+            }
+
+            if ($in_comment || $in_qstring) {
+                syntax_error($line_no + 1);
+            }
+
+            while (count($stack) > 0) {
+                $token = array_pop($stack);
+                if ($token{0} == '"' && $token{strlen($token) - 1} == '"') {
+                    $generate['emit_push'][$target](
+                        substr($token, 1, strlen($token) - 2));
+                } else if ($token{0} == '[' &&
+                    $token{strlen($token) - 1} == ']') {
+                    $generate['emit_comment'][$target](
+                        substr($token, 1, strlen($token) - 2));
+                } else {
+                    $generate['emit_function_call'][$target]($token);
+                }
+            }
+        }
+    }
+
+    if ($in_function) {
+        $generate['emit_postscript'][$target]($functions);
+    }
+
+    return 0;
+}
+
+exit(main($argc, $argv));
