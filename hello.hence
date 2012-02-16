@@ -1,0 +1,4 @@
+main
+    print_line "hello, world"
+
+    [return] "0"
