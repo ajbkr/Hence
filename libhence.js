@@ -170,7 +170,7 @@ var hence_while = function() {
         Functions[cond_func]();
         result = __pop__();
     }
-}
+};
 
 module.exports.__lcall__ = __lcall__;
 
