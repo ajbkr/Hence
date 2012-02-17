@@ -14,9 +14,6 @@ static int Stack_ptr = STACK_SIZE;
 
 extern struct Function Functions[];
 
-#define POP()   pop()
-#define PUSH(x) push(x)
-
 void runtime_error(const char *msg)
 {
     if (msg != NULL) {
@@ -25,23 +22,6 @@ void runtime_error(const char *msg)
         (void) fprintf(stderr, "Runtime error\n");
     }
     exit(EXIT_FAILURE);
-}
-
-char *pop(void)
-{
-    if (Stack_ptr >= STACK_SIZE) {
-        runtime_error("stack underflow");
-    }
-    return Stack[Stack_ptr++];
-}
-
-void push(char *x)
-{
-    if (Stack_ptr < 0) {
-        runtime_error("stack overflow");
-    }
-    (void) strncpy(Stack[--Stack_ptr], x, 255);
-    Stack[Stack_ptr][255] = '\0';
 }
 
 void __lcall__(void)
@@ -100,12 +80,19 @@ void __depth__(void)
 
 char *__pop__(void)
 {
-    return POP();
+    if (Stack_ptr >= STACK_SIZE) {
+        runtime_error("stack underflow");
+    }
+    return Stack[Stack_ptr++];
 }
 
 void __push__(char *s)
 {
-    PUSH(s);
+    if (Stack_ptr < 0) {
+        runtime_error("stack overflow");
+    }
+    (void) strncpy(Stack[--Stack_ptr], s, 255);
+    Stack[Stack_ptr][255] = '\0';
 }
 
 void hence_and(void)
