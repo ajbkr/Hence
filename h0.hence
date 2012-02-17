@@ -74,7 +74,12 @@ false
     "0"
 
 greater_than
-    and not equal rotate rotate less_than not swap pick "2" pick "0"
+    pick "0"
+    pick "2"
+    swap
+    not less_than
+    rotate rotate
+    and not equal
 
 greater_than_or_equal
     not less_than
