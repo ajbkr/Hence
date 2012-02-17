@@ -21,24 +21,14 @@ function __pop__()
 {
     global $Stack;
 
-    $length = array_pop($Stack);
-    $s = '';
-    for ($i = 0; $i < $length; ++$i) {
-        $s .= chr(array_pop($Stack));
-    }
-    array_pop($Stack);	// NUL
-    return $s;
+    return array_pop($Stack);
 }
 
 function __push__($s)
 {
     global $Stack;
 
-    $Stack[] = ord('\0');	// NUL
-    for ($i = strlen($s) - 1; $i >= 0; --$i) {
-        $Stack[] = ord($s{$i});
-    }
-    $Stack[] = strlen($s);
+    $Stack[] = $s;
 }
 
 function hence_and()
