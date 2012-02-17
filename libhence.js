@@ -13,21 +13,11 @@ var __depth__ = function() {
 };
 
 var __pop__ = function() {
-    var length = Stack.pop();
-    var s = '';
-    for (var i = 0; i < length; ++i) {
-        s += String.fromCharCode(Stack.pop());
-    }
-    Stack.pop();	// NUL
-    return s;
+    return Stack.pop();
 };
 
 var __push__ = function(s) {
-    Stack.push('\u0000'.charCodeAt());	// NUL
-    for (var i = s.length - 1; i >= 0; --i) {
-        Stack.push(s[i].charCodeAt());
-    }
-    Stack.push(s.length);
+    Stack.push(s);
 };
 
 var hence_and = function() {
