@@ -350,7 +350,8 @@ function main($argc, $argv)
                         $in_function_declaration = FALSE;
                         $in_function = TRUE;
                         $functions[] = $token;
-                        $generate['emit_function'][$target]($token);
+                        $generate['emit_function'][$target]($token,
+                            $functions);
                         $token = '';
                     } else if ($in_comment || $in_qstring) {
                         $token .= $c;
