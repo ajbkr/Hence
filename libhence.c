@@ -6,7 +6,7 @@
 
 #define STACK_SIZE      1024
 
-static int Stack[STACK_SIZE];
+static char Stack[STACK_SIZE][256];
 static int Stack_ptr = STACK_SIZE;
 
 #define HENCE_FALSE     "0"
@@ -27,7 +27,7 @@ void runtime_error(const char *msg)
     exit(EXIT_FAILURE);
 }
 
-int pop(void)
+char *pop(void)
 {
     if (Stack_ptr >= STACK_SIZE) {
         runtime_error("stack underflow");
@@ -35,12 +35,13 @@ int pop(void)
     return Stack[Stack_ptr++];
 }
 
-void push(int x)
+void push(char *x)
 {
     if (Stack_ptr < 0) {
         runtime_error("stack overflow");
     }
-    Stack[--Stack_ptr] = x;
+    (void) strncpy(Stack[--Stack_ptr], x, 255);
+    Stack[Stack_ptr][255] = '\0';
 }
 
 void __lcall__(void)
@@ -99,31 +100,12 @@ void __depth__(void)
 
 char *__pop__(void)
 {
-    static char s[256];
-    int length;
-    int i;
-
-    if ( (length = POP()) < 0) {
-        runtime_error("buffer underflow");
-    } else if (length > 255) {
-        runtime_error("buffer overflow");
-    }
-    for (i = 0; i < length; ++i) {
-        s[i] = POP();
-    }
-    s[i] = POP();       /* NUL */
-    return s;
+    return POP();
 }
 
 void __push__(char *s)
 {
-    int i;
-
-    PUSH('\0');	/* NUL */
-    for (i = strlen(s) - 1; i >= 0; --i) {
-        PUSH(s[i]);
-    }
-    PUSH(strlen(s));
+    PUSH(s);
 }
 
 void hence_and(void)
