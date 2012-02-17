@@ -49,6 +49,9 @@ swap
 target
     lcall "target"
 
+while
+    lcall "while"
+
 _
     [Synthesised functions]
 

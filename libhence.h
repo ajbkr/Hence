@@ -26,6 +26,7 @@ void hence_rotate(void);
 void hence_subtract(void);
 void hence_swap(void);
 void hence_target(void);
+void hence_while(void);
 
 struct Function {
     char *name;

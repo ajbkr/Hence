@@ -186,3 +186,28 @@ function hence_target()
 {
     __push__('php');
 }
+
+function hence_while()
+{
+    global $Functions;
+
+    $cond_func = __pop__();
+    $loop_func = __pop__();
+
+    if ( !isset($Functions[$cond_func])) {
+        file_put_contents('php://stderr', 'Runtime error' . PHP_EOL);
+        exit(1);
+    }
+    if ( !isset($Functions[$loop_func])) {
+        file_put_contents('php://stderr', 'Runtime error' . PHP_EOL);
+        exit(1);
+    }
+    $Functions[$cond_func]();
+    $result = __pop__();
+    while ($result != HENCE_FALSE) {
+        $Functions[$loop_func]();
+
+        $Functions[$cond_func]();
+        $result = __pop__();
+    }
+}

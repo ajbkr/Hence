@@ -152,6 +152,26 @@ var hence_target = function() {
     __push__('js');
 };
 
+var hence_while = function() {
+    var cond_func = __pop__();
+    var loop_func = __pop__();
+
+    if ( !Functions[cond_func]) {
+        throw('Runtime error');
+    }
+    if ( !Functions[loop_func]) {
+        throw('Runtime error');
+    }
+    Functions[cond_func]();
+    var result = __pop__();
+    while (result != HENCE_FALSE) {
+        Functions[loop_func]();
+
+        Functions[cond_func]();
+        result = __pop__();
+    }
+}
+
 module.exports.__lcall__ = __lcall__;
 
 module.exports.__depth__ = __depth__;
@@ -174,3 +194,4 @@ module.exports.hence_rotate      = hence_rotate;
 module.exports.hence_subtract    = hence_subtract;
 module.exports.hence_swap        = hence_swap;
 module.exports.hence_target      = hence_target;
+module.exports.hence_while       = hence_while;

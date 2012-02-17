@@ -80,6 +80,8 @@ void __lcall__(void)
         hence_swap();
     } else if (strcmp(name, "target") == 0) {
         hence_target();
+    } else if (strcmp(name, "while") == 0) {
+        hence_while();
     } else {
         runtime_error(NULL);
     }
@@ -325,4 +327,48 @@ void hence_swap(void)
 void hence_target(void)
 {
     __push__("c");
+}
+
+void hence_while(void)
+{
+    static char cond_func[256], loop_func[256];
+    static char result[256];
+    int i, j;
+
+    (void) strncpy(cond_func,  __pop__(), 255);
+    cond_func[255] = '\0';
+    (void) strncpy(loop_func,  __pop__(), 255);
+    loop_func[255] = '\0';
+
+    i = 0;
+    while (Functions[i].name != NULL) {
+        if (strcmp(cond_func, Functions[i].name) == 0) {
+            break;
+        }
+        ++i;
+    }
+    if (Functions[i].name == NULL) {
+        runtime_error(NULL);
+    }
+    j = 0;
+    while (Functions[j].name != NULL) {
+        if (strcmp(loop_func, Functions[j].name) == 0) {
+            break;
+        }
+        ++j;
+    }
+    if (Functions[j].name == NULL) {
+        runtime_error(NULL);
+    }
+    Functions[i].func();
+    (void) strncpy(result, __pop__(), 255);
+    result[255] = '\0';
+
+    while (strcmp(result, HENCE_FALSE) != 0) {
+        Functions[j].func();
+
+        Functions[i].func();
+        (void) strncpy(result, __pop__(), 255);
+        result[255] = '\0';
+    }
 }
