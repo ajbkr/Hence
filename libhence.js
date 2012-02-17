@@ -99,6 +99,10 @@ var hence_less_than = function() {
     __push__((y < x) ? (HENCE_TRUE) : (HENCE_FALSE));
 };
 
+var hence_multiply = function() {
+    __push__((__pop__() * __pop__()) + '');
+};
+
 var hence_not = function() {
     __push__((__pop__() != HENCE_FALSE) ? (HENCE_FALSE) : (HENCE_TRUE));
 };
@@ -186,6 +190,7 @@ module.exports.hence_drop        = hence_drop;
 module.exports.hence_if          = hence_if;
 module.exports.hence_json_rpc    = hence_json_rpc;
 module.exports.hence_less_than   = hence_less_than;
+module.exports.hence_multiply    = hence_multiply;
 module.exports.hence_not         = hence_not;
 module.exports.hence_or          = hence_or;
 module.exports.hence_pick        = hence_pick;

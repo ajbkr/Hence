@@ -25,6 +25,9 @@ json_rpc
 less_than
     lcall "less_than"
 
+multiply
+    lcall "multiply"
+
 not
     lcall "not"
 

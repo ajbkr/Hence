@@ -126,6 +126,11 @@ function hence_less_than()
     __push__(($y < $x) ? (HENCE_TRUE) : (HENCE_FALSE));
 }
 
+function hence_multiply()
+{
+    __push__((string) ((int) __pop__() * (int) __pop__()));
+}
+
 function hence_not()
 {
     __push__((__pop__() != HENCE_FALSE) ? (HENCE_FALSE) : (HENCE_TRUE));

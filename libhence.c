@@ -64,6 +64,8 @@ void __lcall__(void)
         hence_json_rpc();
     } else if (strcmp(name, "less_than") == 0) {
         hence_less_than();
+    } else if (strcmp(name, "multiply") == 0) {
+        hence_multiply();
     } else if (strcmp(name, "not") == 0) {
         hence_not();
     } else if (strcmp(name, "or") == 0) {
@@ -241,6 +243,17 @@ void hence_less_than(void)
     y = (int) strtol(__pop__(), NULL, 10);
     x = (int) strtol(__pop__(), NULL, 10);
     __push__((y < x) ? (HENCE_TRUE) : (HENCE_FALSE));
+}
+
+void hence_multiply(void)
+{
+    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    int x, y;
+
+    y = (int) strtol(__pop__(), NULL, 10);
+    x = (int) strtol(__pop__(), NULL, 10);
+    (void) snprintf(s, sizeof(char) * 12, "%d", x * y);
+    __push__(s);
 }
 
 void hence_not(void)
