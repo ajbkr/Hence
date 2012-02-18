@@ -39,6 +39,8 @@ void __lcall__(void)
         hence_depth();
     } else if (strcmp(name, "drop") == 0) {
         hence_drop();
+    } else if (strcmp(name, "equal") == 0) {
+        hence_equal();
     } else if (strcmp(name, "if") == 0) {
         hence_if();
     } else if (strcmp(name, "json_rpc") == 0) {
@@ -145,6 +147,17 @@ void hence_depth(void)
 void hence_drop(void)
 {
     (void) __pop__();
+}
+
+void hence_equal(void)
+{
+    static char x[256], y[256];
+
+    (void) strncpy(y,  __pop__(), 255);
+    y[255] = '\0';
+    (void) strncpy(x,  __pop__(), 255);
+    x[255] = '\0';
+    __push__((strcmp(x, y) == 0) ? (HENCE_TRUE) : (HENCE_FALSE));
 }
 
 void hence_if(void)

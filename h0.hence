@@ -16,6 +16,9 @@ depth
 drop
     lcall "drop"
 
+equal
+    lcall "equal"
+
 if
     lcall "if"
 
@@ -69,9 +72,6 @@ decrement
 
 duplicate
     pick "0"
-
-equal
-    not subtract
 
 false
     "0"

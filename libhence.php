@@ -69,6 +69,11 @@ function hence_drop()
     __pop__();
 }
 
+function hence_equal()
+{
+    __push__((__pop__() == __pop__()) ? (HENCE_TRUE) : (HENCE_FALSE));
+}
+
 function hence_if()
 {
     global $Functions;

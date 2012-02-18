@@ -50,6 +50,10 @@ var hence_drop = function() {
     __pop__();
 };
 
+var hence_equal = function() {
+    __push__((__pop__() == __pop__()) ? (HENCE_TRUE) : (HENCE_FALSE));
+};
+
 var hence_if = function() {
     var cond_func  = __pop__();
     var true_func  = __pop__();
@@ -177,6 +181,7 @@ module.exports.hence_call        = hence_call;
 module.exports.hence_concatenate = hence_concatenate;
 module.exports.hence_depth       = hence_depth;
 module.exports.hence_drop        = hence_drop;
+module.exports.hence_equal       = hence_equal;
 module.exports.hence_if          = hence_if;
 module.exports.hence_json_rpc    = hence_json_rpc;
 module.exports.hence_less_than   = hence_less_than;

@@ -15,6 +15,7 @@ void hence_concatenate(void);
 void hence_depth(void);
 void hence_drop(void);
 void hence_duplicate(void);
+void hence_equal(void);
 void hence_if(void);
 void hence_json_rpc(void);
 void hence_less_than(void);
