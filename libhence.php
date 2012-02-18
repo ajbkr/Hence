@@ -128,6 +128,13 @@ function hence_less_than()
     __push__(($y < $x) ? (HENCE_TRUE) : (HENCE_FALSE));
 }
 
+function hence_modulo()
+{
+    $y = (int) __pop__();
+    $x = (int) __pop__();
+    __push__((string) ($y % $x));
+}
+
 function hence_multiply()
 {
     __push__((string) ((int) __pop__() * (int) __pop__()));

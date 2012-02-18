@@ -31,6 +31,9 @@ json_rpc
 less_than
     lcall "less_than"
 
+modulo
+    lcall "modulo"
+
 multiply
     lcall "multiply"
 
