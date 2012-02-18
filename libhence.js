@@ -46,6 +46,12 @@ var hence_depth = function() {
     __depth__();
 };
 
+var hence_divide = function() {
+    var y = __pop__();
+    var x = __pop__();
+    __push__((y / x | 0) + '');
+};
+
 var hence_drop = function() {
     __pop__();
 };
@@ -180,6 +186,7 @@ module.exports.hence_and         = hence_and;
 module.exports.hence_call        = hence_call;
 module.exports.hence_concatenate = hence_concatenate;
 module.exports.hence_depth       = hence_depth;
+module.exports.hence_divide      = hence_divide;
 module.exports.hence_drop        = hence_drop;
 module.exports.hence_equal       = hence_equal;
 module.exports.hence_if          = hence_if;

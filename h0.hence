@@ -13,6 +13,9 @@ concatenate
 depth
     lcall "depth"
 
+divide
+    lcall "divide"
+
 drop
     lcall "drop"
 

@@ -64,6 +64,13 @@ function hence_depth()
     __depth__();
 }
 
+function hence_divide()
+{
+    $y = (int) __pop__();
+    $x = (int) __pop__();
+    __push__((string) ((int) ($y / $x)));
+}
+
 function hence_drop()
 {
     __pop__();

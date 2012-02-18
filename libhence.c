@@ -37,6 +37,8 @@ void __lcall__(void)
         hence_concatenate();
     } else if (strcmp(name, "depth") == 0) {
         hence_depth();
+    } else if (strcmp(name, "divide") == 0) {
+        hence_divide();
     } else if (strcmp(name, "drop") == 0) {
         hence_drop();
     } else if (strcmp(name, "equal") == 0) {
@@ -142,6 +144,17 @@ void hence_concatenate(void)
 void hence_depth(void)
 {
     __depth__();
+}
+
+void hence_divide(void)
+{
+    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    int x, y;
+
+    y = (int) strtol(__pop__(), NULL, 10);
+    x = (int) strtol(__pop__(), NULL, 10);
+    (void) snprintf(s, sizeof(char) * 12, "%d", y / x);
+    __push__(s);
 }
 
 void hence_drop(void)
