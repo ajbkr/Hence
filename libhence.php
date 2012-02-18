@@ -39,6 +39,11 @@ function hence_and()
         (HENCE_FALSE));
 }
 
+function hence_bitwise_and()
+{
+    __push__((string) (__pop__() & __pop__()));
+}
+
 function hence_call()
 {
     global $Functions;

@@ -4,6 +4,9 @@
 and
     lcall "and"
 
+bitwise_and
+    lcall "bitwise_and"
+
 call
     lcall "call"
 

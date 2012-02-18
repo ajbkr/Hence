@@ -10,6 +10,7 @@ char *__pop__(void);
 void __push__(char *);
 
 void hence_and(void);
+void hence_bitwise_and(void);
 void hence_call(void);
 void hence_concatenate(void);
 void hence_depth(void);

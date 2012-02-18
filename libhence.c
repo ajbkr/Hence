@@ -31,6 +31,8 @@ void __lcall__(void)
     name = __pop__();
     if (strcmp(name, "and") == 0) {
         hence_and();
+    } else if (strcmp(name, "bitwise_and") == 0) {
+        hence_bitwise_and();
     } else if (strcmp(name, "call") == 0) {
         hence_call();
     } else if (strcmp(name, "concatenate") == 0) {
@@ -113,6 +115,17 @@ void hence_and(void)
     x[255] = '\0';
     __push__((strcmp(x, HENCE_FALSE) != 0 && strcmp(y, HENCE_FALSE) != 0) ?
         (HENCE_TRUE) : (HENCE_FALSE));
+}
+
+void hence_bitwise_and(void)
+{
+    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    int x, y;
+
+    y = (int) strtol(__pop__(), NULL, 10);
+    x = (int) strtol(__pop__(), NULL, 10);
+    (void) snprintf(s, sizeof(char) * 12, "%d", x & y);
+    __push__(s);
 }
 
 void hence_call(void)
