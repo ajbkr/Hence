@@ -1,0 +1,6 @@
+main
+    "6"
+    bitwise_or "1"
+    print_line
+
+    [return] "0"
