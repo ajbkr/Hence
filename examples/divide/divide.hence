@@ -1,0 +1,5 @@
+main
+    divide "5" [by] "2"
+    print_line
+
+    [return] "0"

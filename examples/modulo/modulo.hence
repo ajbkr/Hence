@@ -1,0 +1,5 @@
+main
+    [calc.] modulo [of] "5" [divided by] "2"
+    print_line
+
+    [return] "0"
