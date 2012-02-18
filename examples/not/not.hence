@@ -1,0 +1,5 @@
+main
+    print_line not true
+    print_line not false
+
+    [return] "0"

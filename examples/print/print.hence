@@ -1,0 +1,8 @@
+main
+    [push] "42"
+    duplicate
+    print_line
+    increment
+    print_line
+
+    [return] "0"

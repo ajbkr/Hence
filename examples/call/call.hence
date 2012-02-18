@@ -1,0 +1,5 @@
+main
+    [push] "42"
+    call "print_line"
+
+    [return] "0"

@@ -1,0 +1,4 @@
+main
+    print_line multiply "3" [and] "9"
+
+    [return] "0"

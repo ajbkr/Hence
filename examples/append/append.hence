@@ -1,0 +1,6 @@
+main
+    "foo"
+    append "bar"
+    print_line
+
+    [return] "0"

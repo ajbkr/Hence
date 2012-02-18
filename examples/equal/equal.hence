@@ -1,0 +1,15 @@
+print_equal
+    print_line "equal"
+
+print_not_equal
+    print "not\x20"
+    print_equal
+
+main
+    "6" [and] "7"
+    if "equal" [then] "print_equal" [else] "print_not_equal"
+
+    "7" [and] "7"
+    if "equal" [then] "print_equal" [else] "print_not_equal"
+
+    [return] "0"

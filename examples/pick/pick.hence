@@ -1,0 +1,9 @@
+main
+    [push] "foo"
+    [push] "bar"
+    [push] "baz"
+    [push] "quux"
+    pick "1"
+    print_line
+
+    [return] "0"

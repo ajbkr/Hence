@@ -1,0 +1,4 @@
+main
+    print_line decrement "42"
+
+    [return] "0"

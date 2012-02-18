@@ -1,0 +1,4 @@
+main
+    print_line true
+
+    [return] "0"

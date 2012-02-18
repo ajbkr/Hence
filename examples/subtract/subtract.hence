@@ -1,0 +1,5 @@
+main
+    subtract "3" [from] "69"
+    print_line
+
+    [return] "0"

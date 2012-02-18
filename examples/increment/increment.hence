@@ -1,0 +1,4 @@
+main
+    print_line increment "42"
+
+    [return] "0"

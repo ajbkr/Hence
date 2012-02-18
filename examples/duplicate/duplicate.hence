@@ -1,0 +1,7 @@
+main
+    [push] "69"
+    duplicate
+    print_line
+    print_line
+
+    [return] "0"

@@ -1,0 +1,18 @@
+N
+    "4"
+
+TOS_is_less_than_N
+    duplicate [TOS]
+    swap N [and TOS]
+    [TOS is] less_than [N]
+
+increment_TOS
+    duplicate [TOS]
+    print_line
+    increment [TOS]
+
+main
+    [assign] "0" [to TOS]
+    while "TOS_is_less_than_N" "increment_TOS"
+
+    [return] "0"

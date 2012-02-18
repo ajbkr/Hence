@@ -1,0 +1,4 @@
+main
+    print_line add "2" [and] "7"
+
+    [return] "0"

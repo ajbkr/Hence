@@ -1,0 +1,11 @@
+print_false
+    print_line "false"
+
+print_true
+    print_line "true"
+
+main
+    if "true"  [then] "print_true" [else] "print_false"
+    if "false" [then] "print_true" [else] "print_false"
+
+    [return] "0"

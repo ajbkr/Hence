@@ -1,0 +1,17 @@
+print_true
+    print_line "true"
+
+print_false
+    print_line "false"
+
+main
+    [compare] "4" [and] "3"
+    if [4_is] "greater_than_or_equal" [to_3] "print_true" [else] "print_false"
+
+    [compare] "3" [and] "3"
+    if [3_is] "greater_than_or_equal" [to_3] "print_true" [else] "print_false"
+
+    [compare] "2" [and] "3"
+    if [2_is] "greater_than_or_equal" [to_3] "print_true" [else] "print_false"
+
+    [return] "0"

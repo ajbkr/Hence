@@ -1,0 +1,5 @@
+main
+    concatenate "foo" [and] "bar"
+    print_line
+
+    [return] "0"

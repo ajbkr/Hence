@@ -1,0 +1,7 @@
+main
+    [push] "2"
+    [push] "7"
+    drop
+    print_line
+
+    [return] "0"

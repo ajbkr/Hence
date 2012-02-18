@@ -1,0 +1,8 @@
+main
+    [compare] "0" [and] "1"
+    print_line less_than
+
+    [compare] "7" [and] "2"
+    print_line less_than
+
+    [return] "0"

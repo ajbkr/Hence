@@ -1,0 +1,18 @@
+main
+    false
+    and false
+    print_line
+
+    false
+    and true
+    print_line
+
+    true
+    and false
+    print_line
+
+    true
+    and true
+    print_line
+
+    [return] "0"
