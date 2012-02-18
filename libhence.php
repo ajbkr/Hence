@@ -121,6 +121,11 @@ function hence_json_rpc()
         PHP_EOL;
 }
 
+function hence_length()
+{
+    __push__((string) strlen(__pop__()));
+}
+
 function hence_less_than()
 {
     $y = (int) __pop__();

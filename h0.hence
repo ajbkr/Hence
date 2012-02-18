@@ -28,6 +28,9 @@ if
 json_rpc
     lcall "json_rpc"
 
+length
+    lcall "length"
+
 less_than
     lcall "less_than"
 

@@ -47,6 +47,8 @@ void __lcall__(void)
         hence_if();
     } else if (strcmp(name, "json_rpc") == 0) {
         hence_json_rpc();
+    } else if (strcmp(name, "length") == 0) {
+        hence_length();
     } else if (strcmp(name, "less_than") == 0) {
         hence_less_than();
     } else if (strcmp(name, "modulo") == 0) {
@@ -231,6 +233,16 @@ void hence_if(void)
 void hence_json_rpc(void)
 {
     /* ... */
+}
+
+void hence_length(void)
+{
+    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    int x;
+
+    x = strlen(__pop__());
+    (void) snprintf(s, sizeof(char) * 12, "%d", x);
+    __push__(s);
 }
 
 void hence_less_than(void)

@@ -93,6 +93,10 @@ var hence_json_rpc = function() {
         ',"id":1}' + "\n");
 };
 
+var hence_length = function() {
+    __push__(__pop__().length + '');
+};
+
 var hence_less_than = function() {
     var y = __pop__() | 0;
     var x = __pop__() | 0;
@@ -197,6 +201,7 @@ module.exports.hence_drop        = hence_drop;
 module.exports.hence_equal       = hence_equal;
 module.exports.hence_if          = hence_if;
 module.exports.hence_json_rpc    = hence_json_rpc;
+module.exports.hence_length      = hence_length;
 module.exports.hence_less_than   = hence_less_than;
 module.exports.hence_modulo      = hence_modulo;
 module.exports.hence_multiply    = hence_multiply;

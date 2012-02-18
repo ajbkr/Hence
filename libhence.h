@@ -19,6 +19,7 @@ void hence_duplicate(void);
 void hence_equal(void);
 void hence_if(void);
 void hence_json_rpc(void);
+void hence_length(void);
 void hence_less_than(void);
 void hence_modulo(void);
 void hence_multiply(void);
