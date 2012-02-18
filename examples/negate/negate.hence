@@ -1,0 +1,9 @@
+main
+    negate "47"
+    duplicate
+    print_line
+
+    negate
+    print_line
+
+    [return] "0"

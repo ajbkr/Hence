@@ -97,6 +97,9 @@ increment
 less_than_or_equal
     not greater_than
 
+negate
+    multiply subtract "1" "0"
+
 not_equal
     not equal
 
