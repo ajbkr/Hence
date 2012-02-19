@@ -1,0 +1,4 @@
+main
+    print_line bitwise_shift_left "1" [by] "8"
+
+    [return] "0"

@@ -13,6 +13,12 @@ bitwise_not
 bitwise_or
     lcall "bitwise_or"
 
+bitwise_shift_left
+    lcall "bitwise_shift_left"
+
+bitwise_shift_right
+    lcall "bitwise_shift_right"
+
 bitwise_xor
     lcall "bitwise_xor"
 

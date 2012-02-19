@@ -37,6 +37,10 @@ void __lcall__(void)
         hence_bitwise_not();
     } else if (strcmp(name, "bitwise_or") == 0) {
         hence_bitwise_or();
+    } else if (strcmp(name, "bitwise_shift_left") == 0) {
+        hence_bitwise_shift_left();
+    } else if (strcmp(name, "bitwise_shift_right") == 0) {
+        hence_bitwise_shift_right();
     } else if (strcmp(name, "bitwise_xor") == 0) {
         hence_bitwise_xor();
     } else if (strcmp(name, "call") == 0) {
@@ -152,6 +156,28 @@ void hence_bitwise_or(void)
     y = (int) strtol(__pop__(), NULL, 10);
     x = (int) strtol(__pop__(), NULL, 10);
     (void) snprintf(s, sizeof(char) * 12, "%d", x | y);
+    __push__(s);
+}
+
+void hence_bitwise_shift_left(void)
+{
+    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    int x, y;
+
+    y = (int) strtol(__pop__(), NULL, 10);
+    x = (int) strtol(__pop__(), NULL, 10);
+    (void) snprintf(s, sizeof(char) * 12, "%d", y << x);
+    __push__(s);
+}
+
+void hence_bitwise_shift_right(void)
+{
+    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    int x, y;
+
+    y = (int) strtol(__pop__(), NULL, 10);
+    x = (int) strtol(__pop__(), NULL, 10);
+    (void) snprintf(s, sizeof(char) * 12, "%d", y >> x);
     __push__(s);
 }
 

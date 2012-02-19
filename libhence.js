@@ -39,6 +39,18 @@ var hence_bitwise_or = function() {
     __push__((__pop__() | __pop__()) + '');
 };
 
+var hence_bitwise_shift_left = function() {
+    var y = __pop__() | 0;
+    var x = __pop__() | 0;
+    __push__((y << x) + '');
+};
+
+var hence_bitwise_shift_right = function() {
+    var y = __pop__() | 0;
+    var x = __pop__() | 0;
+    __push__((y >> x) + '');
+};
+
 var hence_bitwise_xor = function() {
     __push__((__pop__() ^ __pop__()) + '');
 };
@@ -208,29 +220,31 @@ module.exports.__depth__ = __depth__;
 module.exports.__pop__   = __pop__;
 module.exports.__push__  = __push__;
 
-module.exports.hence_and         = hence_and;
-module.exports.hence_bitwise_and = hence_bitwise_and;
-module.exports.hence_bitwise_not = hence_bitwise_not;
-module.exports.hence_bitwise_or  = hence_bitwise_or;
-module.exports.hence_bitwise_xor = hence_bitwise_xor;
-module.exports.hence_call        = hence_call;
-module.exports.hence_concatenate = hence_concatenate;
-module.exports.hence_depth       = hence_depth;
-module.exports.hence_divide      = hence_divide;
-module.exports.hence_drop        = hence_drop;
-module.exports.hence_equal       = hence_equal;
-module.exports.hence_if          = hence_if;
-module.exports.hence_json_rpc    = hence_json_rpc;
-module.exports.hence_length      = hence_length;
-module.exports.hence_less_than   = hence_less_than;
-module.exports.hence_modulo      = hence_modulo;
-module.exports.hence_multiply    = hence_multiply;
-module.exports.hence_not         = hence_not;
-module.exports.hence_or          = hence_or;
-module.exports.hence_pick        = hence_pick;
-module.exports.hence_print       = hence_print;
-module.exports.hence_rotate      = hence_rotate;
-module.exports.hence_subtract    = hence_subtract;
-module.exports.hence_swap        = hence_swap;
-module.exports.hence_target      = hence_target;
-module.exports.hence_while       = hence_while;
+module.exports.hence_and                 = hence_and;
+module.exports.hence_bitwise_and         = hence_bitwise_and;
+module.exports.hence_bitwise_not         = hence_bitwise_not;
+module.exports.hence_bitwise_or          = hence_bitwise_or;
+module.exports.hence_bitwise_shift_left  = hence_bitwise_shift_left;
+module.exports.hence_bitwise_shift_right = hence_bitwise_shift_right;
+module.exports.hence_bitwise_xor         = hence_bitwise_xor;
+module.exports.hence_call                = hence_call;
+module.exports.hence_concatenate         = hence_concatenate;
+module.exports.hence_depth               = hence_depth;
+module.exports.hence_divide              = hence_divide;
+module.exports.hence_drop                = hence_drop;
+module.exports.hence_equal               = hence_equal;
+module.exports.hence_if                  = hence_if;
+module.exports.hence_json_rpc            = hence_json_rpc;
+module.exports.hence_length              = hence_length;
+module.exports.hence_less_than           = hence_less_than;
+module.exports.hence_modulo              = hence_modulo;
+module.exports.hence_multiply            = hence_multiply;
+module.exports.hence_not                 = hence_not;
+module.exports.hence_or                  = hence_or;
+module.exports.hence_pick                = hence_pick;
+module.exports.hence_print               = hence_print;
+module.exports.hence_rotate              = hence_rotate;
+module.exports.hence_subtract            = hence_subtract;
+module.exports.hence_swap                = hence_swap;
+module.exports.hence_target              = hence_target;
+module.exports.hence_while               = hence_while;

@@ -54,6 +54,20 @@ function hence_bitwise_or()
     __push__((string) (__pop__() | __pop__()));
 }
 
+function hence_bitwise_shift_left()
+{
+    $y = (int) __pop__();
+    $x = (int) __pop__();
+    __push__((string) ($y << $x));
+}
+
+function hence_bitwise_shift_right()
+{
+    $y = (int) __pop__();
+    $x = (int) __pop__();
+    __push__((string) ($y >> $x));
+}
+
 function hence_bitwise_xor()
 {
     __push__((string) ((int) __pop__() ^ (int) __pop__()));

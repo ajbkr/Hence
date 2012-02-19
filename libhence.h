@@ -13,6 +13,8 @@ void hence_and(void);
 void hence_bitwise_and(void);
 void hence_bitwise_not(void);
 void hence_bitwise_or(void);
+void hence_bitwise_shift_left(void);
+void hence_bitwise_shift_right(void);
 void hence_bitwise_xor(void);
 void hence_call(void);
 void hence_concatenate(void);
