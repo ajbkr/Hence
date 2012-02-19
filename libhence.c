@@ -35,6 +35,8 @@ void __lcall__(void)
         hence_bitwise_and();
     } else if (strcmp(name, "bitwise_or") == 0) {
         hence_bitwise_or();
+    } else if (strcmp(name, "bitwise_xor") == 0) {
+        hence_bitwise_xor();
     } else if (strcmp(name, "call") == 0) {
         hence_call();
     } else if (strcmp(name, "concatenate") == 0) {
@@ -138,6 +140,17 @@ void hence_bitwise_or(void)
     y = (int) strtol(__pop__(), NULL, 10);
     x = (int) strtol(__pop__(), NULL, 10);
     (void) snprintf(s, sizeof(char) * 12, "%d", x | y);
+    __push__(s);
+}
+
+void hence_bitwise_xor(void)
+{
+    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    int x, y;
+
+    y = (int) strtol(__pop__(), NULL, 10);
+    x = (int) strtol(__pop__(), NULL, 10);
+    (void) snprintf(s, sizeof(char) * 12, "%d", x ^ y);
     __push__(s);
 }
 

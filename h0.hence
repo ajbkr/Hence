@@ -10,6 +10,9 @@ bitwise_and
 bitwise_or
     lcall "bitwise_or"
 
+bitwise_xor
+    lcall "bitwise_xor"
+
 call
     lcall "call"
 

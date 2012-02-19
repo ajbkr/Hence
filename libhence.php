@@ -49,6 +49,11 @@ function hence_bitwise_or()
     __push__((string) (__pop__() | __pop__()));
 }
 
+function hence_bitwise_xor()
+{
+    __push__((string) ((int) __pop__() ^ (int) __pop__()));
+}
+
 function hence_call()
 {
     global $Functions;
