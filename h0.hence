@@ -7,6 +7,9 @@ and
 bitwise_and
     lcall "bitwise_and"
 
+bitwise_not
+    lcall "bitwise_not"
+
 bitwise_or
     lcall "bitwise_or"
 

@@ -31,6 +31,10 @@ var hence_bitwise_and = function() {
     __push__((__pop__() & __pop__()) + '');
 };
 
+var hence_bitwise_not = function() {
+    __push__((~(__pop__() | 0)) + '');
+};
+
 var hence_bitwise_or = function() {
     __push__((__pop__() | __pop__()) + '');
 };
@@ -206,6 +210,7 @@ module.exports.__push__  = __push__;
 
 module.exports.hence_and         = hence_and;
 module.exports.hence_bitwise_and = hence_bitwise_and;
+module.exports.hence_bitwise_not = hence_bitwise_not;
 module.exports.hence_bitwise_or  = hence_bitwise_or;
 module.exports.hence_bitwise_xor = hence_bitwise_xor;
 module.exports.hence_call        = hence_call;
