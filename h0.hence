@@ -91,6 +91,9 @@ append
 decrement
     subtract "1"
 
+divide_by
+    divide swap
+
 duplicate
     pick "0"
 
