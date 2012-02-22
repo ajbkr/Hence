@@ -85,8 +85,7 @@ target
 while
     lcall "while"
 
-_
-    [Synthesised functions]
+[Synthesised functions]
 
 add
     subtract subtract swap "0" swap
@@ -100,10 +99,8 @@ decrement
 divide_by
     divide swap
 
-_depth_greater_than_1
-    greater_than depth "1"
 dump
-    while "_depth_greater_than_1" "print_line"
+    while "depth" "print_line"
 
 duplicate
     pick "0"
@@ -112,7 +109,7 @@ false
     "0"
 
 greater_than
-    and not equal rotate rotate not less_than swap pick "2" pick "0"
+    and not_equal rotate rotate greater_than_or_equal over over
 
 greater_than_or_equal
     not less_than
@@ -124,7 +121,7 @@ less_than_or_equal
     not greater_than
 
 negate
-    multiply subtract "1" "0"
+    multiply "-1"
 
 not_equal
     not equal
@@ -133,7 +130,7 @@ over
     pick "1"
 
 print_line
-    print "\n" print
+    print append "\n"
 
 rotate
     roll "2"
