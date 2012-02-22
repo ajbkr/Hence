@@ -77,6 +77,8 @@ void __lcall__(void)
         hence_print();
     } else if (strcmp(name, "rotate") == 0) {
         hence_rotate();
+    } else if (strcmp(name, "substring") == 0) {
+        hence_substring();
     } else if (strcmp(name, "subtract") == 0) {
         hence_subtract();
     } else if (strcmp(name, "swap") == 0) {
@@ -409,6 +411,24 @@ void hence_rotate(void)
     __push__(y);
     __push__(z);
     __push__(x);
+}
+
+void hence_substring(void)
+{
+    static char string[256];
+    static char result[256];
+    int start, length;
+
+    (void) strncpy(string, __pop__(), 255);
+    string[255] = '\0';
+    start = (int) strtol(__pop__(), NULL, 10);
+    length = (int) strtol(__pop__(), NULL, 10);
+    if (start > strlen(string) || length > 255) {
+        runtime_error(NULL);
+    }
+    (void) strncpy(result, &string[start], length);
+    result[255] = '\0';
+    __push__(result);
 }
 
 void hence_subtract(void)

@@ -73,6 +73,9 @@ print
 rotate
     lcall "rotate"
 
+substring
+    lcall "substring"
+
 subtract
     lcall "subtract"
 

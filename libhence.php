@@ -220,6 +220,14 @@ function hence_rotate()
     __push__($x);
 }
 
+function hence_substring()
+{
+    $string = __pop__();
+    $start = (int) __pop__();
+    $length = (int) __pop__();
+    __push__(substr($string, $start, $length));
+}
+
 function hence_subtract()
 {
     $y = (int) __pop__();

@@ -1,0 +1,4 @@
+main
+    print_line substring [of] "foobarbaz" [starting at] "3" [with length] "3"
+
+    [return] "0"

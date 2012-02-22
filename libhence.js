@@ -177,6 +177,13 @@ var hence_rotate = function() {
     __push__(x);
 };
 
+var hence_substring = function() {
+    var string = __pop__();
+    var start = __pop__() | 0;
+    var length = __pop__() | 0;
+    __push__(string.substr(start, length));
+};
+
 var hence_subtract = function() {
     var y = __pop__();
     var x = __pop__();
@@ -244,6 +251,7 @@ module.exports.hence_or                  = hence_or;
 module.exports.hence_pick                = hence_pick;
 module.exports.hence_print               = hence_print;
 module.exports.hence_rotate              = hence_rotate;
+module.exports.hence_substring           = hence_substring;
 module.exports.hence_subtract            = hence_subtract;
 module.exports.hence_swap                = hence_swap;
 module.exports.hence_target              = hence_target;
