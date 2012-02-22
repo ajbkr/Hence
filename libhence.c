@@ -75,14 +75,12 @@ void __lcall__(void)
         hence_pick();
     } else if (strcmp(name, "print") == 0) {
         hence_print();
-    } else if (strcmp(name, "rotate") == 0) {
-        hence_rotate();
+    } else if (strcmp(name, "roll") == 0) {
+        hence_roll();
     } else if (strcmp(name, "substring") == 0) {
         hence_substring();
     } else if (strcmp(name, "subtract") == 0) {
         hence_subtract();
-    } else if (strcmp(name, "swap") == 0) {
-        hence_swap();
     } else if (strcmp(name, "target") == 0) {
         hence_target();
     } else if (strcmp(name, "while") == 0) {
@@ -398,18 +396,23 @@ void hence_print(void)
     (void) printf("%s", __pop__());
 }
 
-void hence_rotate(void)
+void hence_roll(void)
 {
-    static char x[256], y[256], z[256];
+    static char v[STACK_SIZE][256];
+    static char x[256];
+    int i, n;
 
-    (void) strncpy(z, __pop__(), 255);
-    z[255] = '\0';
-    (void) strncpy(y, __pop__(), 255);
-    y[255] = '\0';
-    (void) strncpy(x, __pop__(), 255);
+    n = (int) strtol(__pop__(), NULL, 10);
+
+    for (i = 0; i <= n; ++i) {
+        (void) strncpy(v[i], __pop__(), 255);
+        v[i][255] = '\0';
+    }
+    (void) strncpy(x, v[--i], 255);
     x[255] = '\0';
-    __push__(y);
-    __push__(z);
+    while (i > 0) {
+        __push__(v[--i]);
+    }
     __push__(x);
 }
 
@@ -440,18 +443,6 @@ void hence_subtract(void)
     x = (int) strtol(__pop__(), NULL, 10);
     (void) snprintf(s, sizeof(char) * 12, "%d", x - y);
     __push__(s);
-}
-
-void hence_swap(void)
-{
-    static char x[256], y[256];
-
-    (void) strncpy(y, __pop__(), 255);
-    y[255] = '\0';
-    (void) strncpy(x, __pop__(), 255);
-    x[255] = '\0';
-    __push__(y);
-    __push__(x);
 }
 
 void hence_target(void)

@@ -33,10 +33,9 @@ void hence_not(void);
 void hence_or(void);
 void hence_pick(void);
 void hence_print(void);
-void hence_rotate(void);
+void hence_roll(void);
 void hence_substring(void);
 void hence_subtract(void);
-void hence_swap(void);
 void hence_target(void);
 void hence_while(void);
 

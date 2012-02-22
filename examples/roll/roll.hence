@@ -1,0 +1,6 @@
+main
+    "an" "a3" "a2" "a1" "a0"
+    roll "4"
+    dump
+
+    [return] "0"

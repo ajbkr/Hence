@@ -1,0 +1,5 @@
+main
+    [push] "a" "b" "c"
+    dump
+
+    [return] "0"

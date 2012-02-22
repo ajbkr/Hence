@@ -210,13 +210,18 @@ function hence_print()
     echo __pop__();
 }
 
-function hence_rotate()
+function hence_roll()
 {
-    $z = __pop__();
-    $y = __pop__();
-    $x = __pop__();
-    __push__($y);
-    __push__($z);
+    $n = (int) __pop__();
+
+    $v = array();
+    for ($i = 0; $i <= $n; ++$i) {
+        $v[] = __pop__();
+    }
+    $x = array_pop($v);
+    while (count($v) > 0) {
+        __push__(array_pop($v));
+    }
     __push__($x);
 }
 
@@ -233,14 +238,6 @@ function hence_subtract()
     $y = (int) __pop__();
     $x = (int) __pop__();
     __push__((string) ($x - $y));
-}
-
-function hence_swap()
-{
-    $y = __pop__();
-    $x = __pop__();
-    __push__($y);
-    __push__($x);
 }
 
 function hence_target()

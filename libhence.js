@@ -168,12 +168,17 @@ var hence_print = function() {
     process.stdout.write(__pop__());
 };
 
-var hence_rotate = function() {
-    var z = __pop__();
-    var y = __pop__();
-    var x = __pop__();
-    __push__(y);
-    __push__(z);
+var hence_roll = function() {
+    var n = __pop__() | 0;
+
+    var v = [];
+    for (var i = 0; i <= n; ++i) {
+        v.push(__pop__());
+    }
+    var x = v.pop();
+    while (v.length > 0) {
+        __push__(v.pop());
+    }
     __push__(x);
 };
 
@@ -188,13 +193,6 @@ var hence_subtract = function() {
     var y = __pop__();
     var x = __pop__();
     __push__((x - y) + '');
-};
-
-var hence_swap = function() {
-    var y = __pop__();
-    var x = __pop__();
-    __push__(y);
-    __push__(x);
 };
 
 var hence_target = function() {
@@ -250,9 +248,8 @@ module.exports.hence_not                 = hence_not;
 module.exports.hence_or                  = hence_or;
 module.exports.hence_pick                = hence_pick;
 module.exports.hence_print               = hence_print;
-module.exports.hence_rotate              = hence_rotate;
+module.exports.hence_roll                = hence_roll;
 module.exports.hence_substring           = hence_substring;
 module.exports.hence_subtract            = hence_subtract;
-module.exports.hence_swap                = hence_swap;
 module.exports.hence_target              = hence_target;
 module.exports.hence_while               = hence_while;

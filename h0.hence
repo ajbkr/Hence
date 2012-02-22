@@ -70,17 +70,14 @@ pick
 print
     lcall "print"
 
-rotate
-    lcall "rotate"
+roll
+    lcall "roll"
 
 substring
     lcall "substring"
 
 subtract
     lcall "subtract"
-
-swap
-    lcall "swap"
 
 target
     lcall "target"
@@ -102,6 +99,11 @@ decrement
 
 divide_by
     divide swap
+
+_depth_greater_than_1
+    greater_than depth "1"
+dump
+    while "_depth_greater_than_1" "print_line"
 
 duplicate
     pick "0"
@@ -129,6 +131,12 @@ not_equal
 
 print_line
     print "\n" print
+
+rotate
+    roll "2"
+
+swap
+    roll "1"
 
 true
     "1"
