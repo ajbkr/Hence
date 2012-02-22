@@ -1,0 +1,5 @@
+main
+    [push] "a" [and] "b"
+    print_line over
+
+    [return] "0"

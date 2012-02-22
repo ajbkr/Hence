@@ -129,6 +129,9 @@ negate
 not_equal
     not equal
 
+over
+    pick "1"
+
 print_line
     print "\n" print
 
