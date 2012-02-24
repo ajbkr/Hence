@@ -70,6 +70,25 @@ var hence_concatenate = function() {
     __push__(y + x);
 };
 
+var hence_debug = function() {
+    __depth__();
+    var depth = __pop__();
+
+    var v = [];
+    for (var i = 0; i < depth; ++i) {
+        v.push(__pop__());
+    }
+    process.stdout.write('[ ');
+    for (i = v.length - 1; i > 0; --i) {
+        process.stdout.write('"' + v[i] + '", ');
+    }
+    process.stdout.write('"' + v[0] + '"');
+    process.stdout.write(" ]\n");
+    while (v.length > 0) {
+        __push__(v.pop());
+    }
+};
+
 var hence_depth = function() {
     __depth__();
 };
@@ -234,6 +253,7 @@ module.exports.hence_bitwise_shift_right = hence_bitwise_shift_right;
 module.exports.hence_bitwise_xor         = hence_bitwise_xor;
 module.exports.hence_call                = hence_call;
 module.exports.hence_concatenate         = hence_concatenate;
+module.exports.hence_debug               = hence_debug;
 module.exports.hence_depth               = hence_depth;
 module.exports.hence_divide              = hence_divide;
 module.exports.hence_drop                = hence_drop;

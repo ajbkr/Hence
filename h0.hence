@@ -28,6 +28,9 @@ call
 concatenate
     lcall "concatenate"
 
+debug
+    lcall "debug"
+
 depth
     lcall "depth"
 
@@ -93,11 +96,17 @@ add
 append
     concatenate swap
 
+assign
+    set swap
+
 decrement
     subtract "1"
 
 divide_by
     divide swap
+
+do_nothing
+    [no-op]
 
 dump
     while "depth" "print_line"
@@ -107,6 +116,9 @@ duplicate
 
 false
     "0"
+
+get
+    pick call
 
 greater_than
     and not_equal rotate rotate greater_than_or_equal over over
@@ -134,6 +146,33 @@ print_line
 
 rotate
     roll "2"
+
+_rrdirsri
+    rotate
+    rotate
+    duplicate
+    increment
+    roll
+    swap
+    roll "3"
+    increment
+_rrdiirdri
+    rotate
+    rotate
+    duplicate
+    increment
+    increment
+    roll
+    drop
+    rotate
+    increment
+_ool
+    less_than over over
+set
+    [push] "0" call
+    if "_ool" "_rrdiirdri" "do_nothing"
+    while "_ool" "_rrdirsri"
+    drop drop
 
 swap
     roll "1"

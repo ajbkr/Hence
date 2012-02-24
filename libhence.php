@@ -93,6 +93,26 @@ function hence_concatenate()
     __push__($y . $x);
 }
 
+function hence_debug()
+{
+    __depth__();
+    $depth = __pop__();
+
+    $v = array();
+    for ($i = 0; $i < $depth; ++$i) {
+        $v[] = __pop__();
+    }
+    echo '[ ';
+    for ($i = count($v) - 1; $i > 0; --$i) {
+        echo '"' . $v[$i] . '", ';
+    }
+    echo '"' . $v[0] . '"';
+    echo ' ]', PHP_EOL;
+    while (count($v) > 0) {
+        __push__(array_pop($v));
+    }
+}
+
 function hence_depth()
 {
     __depth__();

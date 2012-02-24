@@ -47,6 +47,8 @@ void __lcall__(void)
         hence_call();
     } else if (strcmp(name, "concatenate") == 0) {
         hence_concatenate();
+    } else if (strcmp(name, "debug") == 0) {
+        hence_debug();
     } else if (strcmp(name, "depth") == 0) {
         hence_depth();
     } else if (strcmp(name, "divide") == 0) {
@@ -220,6 +222,30 @@ void hence_concatenate(void)
     x[255] = '\0';
     (void) snprintf(s, sizeof(char) * 256, "%s%s", y, x);
     __push__(s);
+}
+
+void hence_debug(void)
+{
+    static char v[STACK_SIZE][256];
+    int i, depth;
+
+    __depth__();
+    depth = (int) strtol(__pop__(), NULL, 10);
+
+    for (i = 0; i < depth; ++i) {
+        (void) strncpy(v[i], __pop__(), 255);
+        v[i][255] = '\0';
+    }
+    (void) printf("[ ");
+    for (i = depth - 1; i > 0; --i) {
+        (void) printf("\"%s\", ", v[i]);
+    }
+    (void) printf("\"%s\"", v[0]);
+    (void) printf(" ]\n");
+    i = depth - 1;
+    while (i >= 0) {
+        __push__(v[i--]);
+    }
 }
 
 void hence_depth(void)

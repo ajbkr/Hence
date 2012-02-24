@@ -1,0 +1,5 @@
+main
+    [push] "0" "1" "2"
+    debug
+
+    [return] "0"
