@@ -144,6 +144,13 @@ over
 print_line
     print append "\n"
 
+_sd
+    decrement swap [push] ""
+_dsg
+    greater_than swap "0" duplicate
+reserve
+    drop while "_dsg" "_sd"
+
 rotate
     roll "2"
 

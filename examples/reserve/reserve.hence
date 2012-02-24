@@ -1,0 +1,10 @@
+main
+    reserve "4"
+
+    print_line depth
+    print_line
+    print_line
+    print_line
+    print_line
+
+    [return] "0"
