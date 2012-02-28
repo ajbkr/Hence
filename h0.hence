@@ -90,6 +90,13 @@ while
 
 [Synthesised functions]
 
+_ss
+    subtract swap "0"
+_dsl
+    less_than swap "0" duplicate
+absolute
+    if "_dsl" "_ss" "do_nothing"
+
 add
     subtract subtract swap "0" swap
 
