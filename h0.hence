@@ -58,9 +58,6 @@ less_than
 modulo
     lcall "modulo"
 
-multiply
-    lcall "multiply"
-
 not
     lcall "not"
 
@@ -139,6 +136,54 @@ increment
 less_than_or_equal
     not greater_than
 
+_e
+    equal "1"
+_rdrarsrparrr
+    rotate
+    duplicate
+    rotate
+    add
+    rotate
+    swap
+
+    roll "3"
+    pick "2"
+    add
+    roll "3"
+    roll "3"
+    roll "3"
+_pn
+    pick "3"
+    not_equal "0"
+_mo
+    "-1"
+_o
+    "1"
+_sl
+    less_than swap "0"
+_oaoal
+    over
+    absolute
+    over
+    absolute
+    less_than
+multiply
+    if "_oaoal" "swap" "do_nothing"
+
+    over
+    if "_sl" "_o" "_mo"
+
+    "0"
+    while "_pn" "_rdrarsrparrr"
+
+    roll "3"
+    drop
+    roll "2"
+    drop
+
+    swap
+    if "_e" "_ss" "do_nothing"
+
 negate
     multiply "-1"
 
@@ -183,7 +228,7 @@ _rrdiirdri
 _ool
     less_than over over
 set
-    [push] "0" call
+    "0" call
     if "_ool" "_rrdiirdri" "do_nothing"
     while "_ool" "_rrdirsri"
     drop drop

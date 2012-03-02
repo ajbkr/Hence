@@ -26,9 +26,10 @@ void runtime_error(const char *msg)
 
 void __lcall__(void)
 {
-    char *name;
+    char name[256];
 
-    name = __pop__();
+    (void) strncpy(name, __pop__(), 255);
+    name[255] = '\0';
     if (strcmp(name, "and") == 0) {
         hence_and();
     } else if (strcmp(name, "bitwise_and") == 0) {
@@ -67,8 +68,6 @@ void __lcall__(void)
         hence_less_than();
     } else if (strcmp(name, "modulo") == 0) {
         hence_modulo();
-    } else if (strcmp(name, "multiply") == 0) {
-        hence_multiply();
     } else if (strcmp(name, "not") == 0) {
         hence_not();
     } else if (strcmp(name, "or") == 0) {
@@ -94,7 +93,7 @@ void __lcall__(void)
 
 void __depth__(void)
 {
-    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    char s[12];  /* [\-][0-9]{1,10}\0 */
 
     (void) snprintf(s, sizeof(char) * 12, "%d", STACK_SIZE - Stack_ptr);
     __push__(s);
@@ -119,7 +118,7 @@ void __push__(char *s)
 
 void hence_and(void)
 {
-    static char x[256], y[256];
+    char x[256], y[256];
 
     (void) strncpy(y, __pop__(), 255);
     y[255] = '\0';
@@ -131,7 +130,7 @@ void hence_and(void)
 
 void hence_bitwise_and(void)
 {
-    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    char s[12];  /* [\-][0-9]{1,10}\0 */
     int x, y;
 
     y = (int) strtol(__pop__(), NULL, 10);
@@ -142,7 +141,7 @@ void hence_bitwise_and(void)
 
 void hence_bitwise_not(void)
 {
-    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    char s[12];  /* [\-][0-9]{1,10}\0 */
     int x;
 
     x = (int) strtol(__pop__(), NULL, 10);
@@ -152,7 +151,7 @@ void hence_bitwise_not(void)
 
 void hence_bitwise_or(void)
 {
-    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    char s[12];  /* [\-][0-9]{1,10}\0 */
     int x, y;
 
     y = (int) strtol(__pop__(), NULL, 10);
@@ -163,7 +162,7 @@ void hence_bitwise_or(void)
 
 void hence_bitwise_shift_left(void)
 {
-    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    char s[12];  /* [\-][0-9]{1,10}\0 */
     int x, y;
 
     y = (int) strtol(__pop__(), NULL, 10);
@@ -174,7 +173,7 @@ void hence_bitwise_shift_left(void)
 
 void hence_bitwise_shift_right(void)
 {
-    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    char s[12];  /* [\-][0-9]{1,10}\0 */
     int x, y;
 
     y = (int) strtol(__pop__(), NULL, 10);
@@ -185,7 +184,7 @@ void hence_bitwise_shift_right(void)
 
 void hence_bitwise_xor(void)
 {
-    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    char s[12];  /* [\-][0-9]{1,10}\0 */
     int x, y;
 
     y = (int) strtol(__pop__(), NULL, 10);
@@ -196,10 +195,11 @@ void hence_bitwise_xor(void)
 
 void hence_call(void)
 {
-    char *x;
+    char x[256];
     int i;
 
-    x = __pop__();
+    (void) strncpy(x, __pop__(), 255);
+    x[255] = '\0';
     i = 0;
     while (Functions[i].name != NULL) {
         if (strcmp(x, Functions[i].name) == 0) {
@@ -213,8 +213,8 @@ void hence_call(void)
 
 void hence_concatenate(void)
 {
-    static char x[256], y[256];
-    static char s[256];
+    char x[256], y[256];
+    char s[256];
 
     (void) strncpy(y, __pop__(), 255);
     y[255] = '\0';
@@ -226,7 +226,7 @@ void hence_concatenate(void)
 
 void hence_debug(void)
 {
-    static char v[STACK_SIZE][256];
+    char v[STACK_SIZE][256];
     int i, depth;
 
     __depth__();
@@ -255,7 +255,7 @@ void hence_depth(void)
 
 void hence_divide(void)
 {
-    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    char s[12];  /* [\-][0-9]{1,10}\0 */
     int x, y;
 
     y = (int) strtol(__pop__(), NULL, 10);
@@ -271,7 +271,7 @@ void hence_drop(void)
 
 void hence_equal(void)
 {
-    static char x[256], y[256];
+    char x[256], y[256];
 
     (void) strncpy(y,  __pop__(), 255);
     y[255] = '\0';
@@ -282,8 +282,8 @@ void hence_equal(void)
 
 void hence_if(void)
 {
-    static char cond_func[256], true_func[256], false_func[256];
-    static char result[256];
+    char cond_func[256], true_func[256], false_func[256];
+    char result[256];
     int i;
 
     (void) strncpy(cond_func,  __pop__(), 255);
@@ -306,10 +306,10 @@ void hence_if(void)
     }
     (void) strncpy(result, __pop__(), 255);
     result[255] = '\0';
-    if (strcmp(result, HENCE_FALSE) != 0) {
+    if (strcmp(result, HENCE_FALSE) == 0) {
         i = 0;
         while (Functions[i].name != NULL) {
-            if (strcmp(true_func, Functions[i].name) == 0) {
+            if (strcmp(false_func, Functions[i].name) == 0) {
                 Functions[i].func();
                 break;
             }
@@ -321,7 +321,7 @@ void hence_if(void)
     } else {
         i = 0;
         while (Functions[i].name != NULL) {
-            if (strcmp(false_func, Functions[i].name) == 0) {
+            if (strcmp(true_func, Functions[i].name) == 0) {
                 Functions[i].func();
                 break;
             }
@@ -340,7 +340,7 @@ void hence_json_rpc(void)
 
 void hence_length(void)
 {
-    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    char s[12];  /* [\-][0-9]{1,10}\0 */
     int x;
 
     x = strlen(__pop__());
@@ -359,23 +359,12 @@ void hence_less_than(void)
 
 void hence_modulo(void)
 {
-    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    char s[12];  /* [\-][0-9]{1,10}\0 */
     int x, y;
 
     y = (int) strtol(__pop__(), NULL, 10);
     x = (int) strtol(__pop__(), NULL, 10);
     (void) snprintf(s, sizeof(char) * 12, "%d", y % x);
-    __push__(s);
-}
-
-void hence_multiply(void)
-{
-    static char s[12];  /* [\-][0-9]{1,10}\0 */
-    int x, y;
-
-    y = (int) strtol(__pop__(), NULL, 10);
-    x = (int) strtol(__pop__(), NULL, 10);
-    (void) snprintf(s, sizeof(char) * 12, "%d", x * y);
     __push__(s);
 }
 
@@ -387,7 +376,7 @@ void hence_not(void)
 
 void hence_or(void)
 {
-    static char x[256], y[256];
+    char x[256], y[256];
 
     (void) strncpy(y, __pop__(), 255);
     y[255] = '\0';
@@ -399,7 +388,7 @@ void hence_or(void)
 
 void hence_pick(void)
 {
-    static char v[256][256];
+    char v[256][256];
     int i, n;
 
     n = (int) strtol(__pop__(), NULL, 10);
@@ -424,8 +413,8 @@ void hence_print(void)
 
 void hence_roll(void)
 {
-    static char v[STACK_SIZE][256];
-    static char x[256];
+    char v[STACK_SIZE][256];
+    char x[256];
     int i, n;
 
     n = (int) strtol(__pop__(), NULL, 10);
@@ -444,8 +433,8 @@ void hence_roll(void)
 
 void hence_substring(void)
 {
-    static char string[256];
-    static char result[256];
+    char string[256];
+    char result[256];
     int start, length;
 
     (void) strncpy(string, __pop__(), 255);
@@ -462,7 +451,7 @@ void hence_substring(void)
 
 void hence_subtract(void)
 {
-    static char s[12];  /* [\-][0-9]{1,10}\0 */
+    char s[12];  /* [\-][0-9]{1,10}\0 */
     int x, y;
 
     y = (int) strtol(__pop__(), NULL, 10);
@@ -478,8 +467,8 @@ void hence_target(void)
 
 void hence_while(void)
 {
-    static char cond_func[256], loop_func[256];
-    static char result[256];
+    char cond_func[256], loop_func[256];
+    char result[256];
     int i, j;
 
     (void) strncpy(cond_func,  __pop__(), 255);
