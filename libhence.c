@@ -1,16 +1,40 @@
+#include <search.h>	/* hcreate(), hdestroy(), hsearch() */
 #include <stdlib.h>	/* EXIT_FAILURE, NULL, exit(), strtol() */
-#include <string.h>	/* strcmp(), strlen(), strncpy() */
+#include <string.h>	/* memcpy(), strcmp(), strlen(), strncpy() */
+#include <errno.h>	/* errno */
 #include <stdio.h>	/* fprintf(), printf(), snprintf(), stderr */
 
 #include "libhence.h"
 
-#define STACK_SIZE      1024
+#define FOREVER	for ( ; ; )
 
-static char Stack[STACK_SIZE][256];
-static int Stack_ptr = STACK_SIZE;
+int Stack[STACK_SIZE];
+int Stack_ptr = STACK_SIZE;
 
-#define HENCE_FALSE     "0"
-#define HENCE_TRUE      "1"
+struct Heap_element Heap[STACK_SIZE];
+
+int Free_stack[STACK_SIZE];
+int Free_stack_ptr = STACK_SIZE;
+
+#define NUM_CALL_NATIVE_FUNCS	30 * 1.25F	/* grep call-native h0.hence |
+						   wc -l */
+
+#define HENCE_FALSE     0
+#define HENCE_TRUE      1
+
+#define check_stack_underflow()						\
+    if (Stack_ptr >= STACK_SIZE) {					\
+        runtime_error("stack underflow");				\
+    }
+
+#define i_is_dirty(x)	(x->flags & (1 << HEAP_ELEMENT_FLAGS_I_DIRTY))
+#define s_is_dirty(x)	(x->flags & (1 << HEAP_ELEMENT_FLAGS_S_DIRTY))
+
+#define clean_i(x)	(x->flags &= ~(1 << HEAP_ELEMENT_FLAGS_I_DIRTY))
+#define clean_s(x)	(x->flags &= ~(1 << HEAP_ELEMENT_FLAGS_S_DIRTY))
+
+#define dirty_i(x)	(x->flags |= (1 << HEAP_ELEMENT_FLAGS_I_DIRTY))
+#define dirty_s(x)	(x->flags |= (1 << HEAP_ELEMENT_FLAGS_S_DIRTY))
 
 extern struct Function Functions[];
 
@@ -24,68 +48,236 @@ void runtime_error(const char *msg)
     exit(EXIT_FAILURE);
 }
 
-void __lcall__(void)
+static int free_stack_pop(void)
 {
-    char name[256];
+    if (Free_stack_ptr >= STACK_SIZE) {
+        runtime_error("free stack underflow");
+    }
+    return Free_stack[Free_stack_ptr++];
+}
 
-    (void) strncpy(name, __pop__(), 255);
-    name[255] = '\0';
-    if (strcmp(name, "and") == 0) {
-        hence_and();
-    } else if (strcmp(name, "bitwise_and") == 0) {
-        hence_bitwise_and();
-    } else if (strcmp(name, "bitwise_not") == 0) {
-        hence_bitwise_not();
-    } else if (strcmp(name, "bitwise_or") == 0) {
-        hence_bitwise_or();
-    } else if (strcmp(name, "bitwise_shift_left") == 0) {
-        hence_bitwise_shift_left();
-    } else if (strcmp(name, "bitwise_shift_right") == 0) {
-        hence_bitwise_shift_right();
-    } else if (strcmp(name, "bitwise_xor") == 0) {
-        hence_bitwise_xor();
-    } else if (strcmp(name, "call") == 0) {
-        hence_call();
-    } else if (strcmp(name, "concatenate") == 0) {
-        hence_concatenate();
-    } else if (strcmp(name, "debug") == 0) {
-        hence_debug();
-    } else if (strcmp(name, "depth") == 0) {
-        hence_depth();
-    } else if (strcmp(name, "divide") == 0) {
-        hence_divide();
-    } else if (strcmp(name, "drop") == 0) {
-        hence_drop();
-    } else if (strcmp(name, "equal") == 0) {
-        hence_equal();
-    } else if (strcmp(name, "if") == 0) {
-        hence_if();
-    } else if (strcmp(name, "json_rpc") == 0) {
-        hence_json_rpc();
-    } else if (strcmp(name, "length") == 0) {
-        hence_length();
-    } else if (strcmp(name, "less_than") == 0) {
-        hence_less_than();
-    } else if (strcmp(name, "modulo") == 0) {
-        hence_modulo();
-    } else if (strcmp(name, "not") == 0) {
-        hence_not();
-    } else if (strcmp(name, "or") == 0) {
-        hence_or();
-    } else if (strcmp(name, "pick") == 0) {
-        hence_pick();
-    } else if (strcmp(name, "print") == 0) {
-        hence_print();
-    } else if (strcmp(name, "roll") == 0) {
-        hence_roll();
-    } else if (strcmp(name, "substring") == 0) {
-        hence_substring();
-    } else if (strcmp(name, "subtract") == 0) {
-        hence_subtract();
-    } else if (strcmp(name, "target") == 0) {
-        hence_target();
-    } else if (strcmp(name, "while") == 0) {
-        hence_while();
+static void free_stack_push(int x)
+{
+    if (Free_stack_ptr < 1) {
+        runtime_error("free stack overflow");
+    }
+    Free_stack[--Free_stack_ptr] = x;
+}
+
+static int stack_pop(void)
+{
+    check_stack_underflow();
+    return Stack[Stack_ptr++];
+}
+
+static void stack_push(int x)
+{
+    if (Stack_ptr < 1) {
+        runtime_error("stack overflow");
+    }
+    Stack[--Stack_ptr] = x;
+}
+
+char *itoa(int value, char *s, int radix)
+{
+    const char *digits = "0123456789abcdefghijklmnopqrstuvwxyz";
+    unsigned long ulvalue = value;
+    char *p = s, *q = s;
+    char temp;
+    if (radix == 10 && value < 0) {
+        *p++ = '-';
+        q = p;
+        ulvalue = -value;
+    }
+    do {
+        *p++ = digits[ulvalue % radix];
+        ulvalue /= radix;
+    } while (ulvalue > 0);
+    *p-- = '\0';
+    while (q < p) {
+        temp = *q;
+        *q++ = *p;
+        *p-- = temp;
+    }
+    return s;
+}
+
+static void sprintn(char *s, int n)
+{
+    (void) itoa(n, s, 10);
+}
+
+static long Strtol(const char *nptr, char **endptr, int base)
+{
+    long l;
+
+    errno = 0;
+    l = strtol(nptr, endptr, base);
+    if (errno != 0) {
+        runtime_error("unable to convert string to integer");
+    }
+    return l;
+}
+
+void __init__(void)
+{
+    int i;
+
+    for (i = 0; i < STACK_SIZE; ++i) {
+        free_stack_push(i);
+    }
+}
+
+void __call_native_init__(void)
+{
+    ENTRY item;
+
+    (void) hcreate(NUM_CALL_NATIVE_FUNCS);
+
+    item.key = "and";
+    item.data = hence_and;
+    (void) hsearch(item, ENTER);
+
+    item.key = "bitwise-and";
+    item.data = hence_bitwise_and;
+    (void) hsearch(item, ENTER);
+
+    item.key = "bitwise-not";
+    item.data = hence_bitwise_not;
+    (void) hsearch(item, ENTER);
+
+    item.key = "bitwise-or";
+    item.data = hence_bitwise_or;
+    (void) hsearch(item, ENTER);
+
+    item.key = "bitwise-shift-left";
+    item.data = hence_bitwise_shift_left;
+    (void) hsearch(item, ENTER);
+
+    item.key = "bitwise-shift-right";
+    item.data = hence_bitwise_shift_right;
+    (void) hsearch(item, ENTER);
+
+    item.key = "bitwise-xor";
+    item.data = hence_bitwise_xor;
+    (void) hsearch(item, ENTER);
+
+    item.key = "call";
+    item.data = hence_call;
+    (void) hsearch(item, ENTER);
+
+    item.key = "concatenate";
+    item.data = hence_concatenate;
+    (void) hsearch(item, ENTER);
+
+    item.key = "debug";
+    item.data = hence_debug;
+    (void) hsearch(item, ENTER);
+
+    item.key = "depth";
+    item.data = hence_depth;
+    (void) hsearch(item, ENTER);
+
+    item.key = "divide";
+    item.data = hence_divide;
+    (void) hsearch(item, ENTER);
+
+    item.key = "drop";
+    item.data = hence_drop;
+    (void) hsearch(item, ENTER);
+
+    item.key = "equal";
+    item.data = hence_equal;
+    (void) hsearch(item, ENTER);
+
+    item.key = "exit";
+    item.data = hence_exit;
+    (void) hsearch(item, ENTER);
+
+    item.key = "if";
+    item.data = hence_if;
+    (void) hsearch(item, ENTER);
+
+    item.key = "json-rpc";
+    item.data = hence_json_rpc;
+    (void) hsearch(item, ENTER);
+
+    item.key = "length";
+    item.data = hence_length;
+    (void) hsearch(item, ENTER);
+
+    item.key = "less-than";
+    item.data = hence_less_than;
+    (void) hsearch(item, ENTER);
+
+    item.key = "modulo";
+    item.data = hence_modulo;
+    (void) hsearch(item, ENTER);
+
+    item.key = "not";
+    item.data = hence_not;
+    (void) hsearch(item, ENTER);
+
+    item.key = "or";
+    item.data = hence_or;
+    (void) hsearch(item, ENTER);
+
+    item.key = "pick";
+    item.data = hence_pick;
+    (void) hsearch(item, ENTER);
+
+    item.key = "read-line";
+    item.data = hence_read_line;
+    (void) hsearch(item, ENTER);
+
+    item.key = "roll";
+    item.data = hence_roll;
+    (void) hsearch(item, ENTER);
+
+    item.key = "substring";
+    item.data = hence_substring;
+    (void) hsearch(item, ENTER);
+
+    item.key = "subtract";
+    item.data = hence_subtract;
+    (void) hsearch(item, ENTER);
+
+    item.key = "target";
+    item.data = hence_target;
+    (void) hsearch(item, ENTER);
+
+    item.key = "while";
+    item.data = hence_while;
+    (void) hsearch(item, ENTER);
+
+    item.key = "write";
+    item.data = hence_write;
+    (void) hsearch(item, ENTER);
+}
+
+void __call_native_fini__(void)
+{
+    hdestroy();
+}
+
+void __call_native__(void)
+{
+    struct Heap_element *s;
+    void (*func)(void);
+    ENTRY *found_item;
+    ENTRY item;
+
+    check_stack_underflow();
+    s = &Heap[Stack[Stack_ptr]];
+    if (s_is_dirty(s)) {
+        sprintn(s->s, s->i);
+        clean_s(s);
+    }
+    item.key = s->s;
+    if ( (found_item = hsearch(item, FIND)) != NULL) {
+        (void) __pop__();
+        func = found_item->data;
+        func();
     } else {
         runtime_error(NULL);
     }
@@ -95,114 +287,208 @@ void __depth__(void)
 {
     char s[12];  /* [\-][0-9]{1,10}\0 */
 
-    (void) snprintf(s, sizeof(char) * 12, "%d", STACK_SIZE - Stack_ptr);
+    sprintn(s, STACK_SIZE - Stack_ptr);
     __push__(s);
 }
 
 char *__pop__(void)
 {
-    if (Stack_ptr >= STACK_SIZE) {
-        runtime_error("stack underflow");
-    }
-    return Stack[Stack_ptr++];
+    int x;
+
+    x = stack_pop();
+    free_stack_push(x);
+    return Heap[x].s;
 }
 
 void __push__(char *s)
 {
-    if (Stack_ptr < 0) {
-        runtime_error("stack overflow");
-    }
-    (void) strncpy(Stack[--Stack_ptr], s, 255);
-    Stack[Stack_ptr][255] = '\0';
+    struct Heap_element *e;
+    int x;
+
+    x = free_stack_pop();
+    e = &Heap[x];
+    (void) strncpy(e->s, s, HEAP_ELEMENT_S_SIZE - 1);
+    e->s[HEAP_ELEMENT_S_SIZE - 1] = '\0';
+    clean_s(e);
+    dirty_i(e);
+    stack_push(x);
+}
+
+void __pushi__(int i)
+{
+    struct Heap_element *e;
+    int x;
+
+    x = free_stack_pop();
+    e = &Heap[x];
+    e->i = i;
+    clean_i(e);
+    dirty_s(e);
+    stack_push(x);
 }
 
 void hence_and(void)
 {
-    char x[256], y[256];
+    struct Heap_element *x, *y;
 
-    (void) strncpy(y, __pop__(), 255);
-    y[255] = '\0';
-    (void) strncpy(x, __pop__(), 255);
-    x[255] = '\0';
-    __push__((strcmp(x, HENCE_FALSE) != 0 && strcmp(y, HENCE_FALSE) != 0) ?
-        (HENCE_TRUE) : (HENCE_FALSE));
+    check_stack_underflow();
+    y = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(y)) {
+        y->i = (int) Strtol(y->s, NULL, 10);
+        clean_i(y);
+    }
+    (void) __pop__();
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(x)) {
+        x->i = (int) Strtol(x->s, NULL, 10);
+        clean_i(x);
+    }
+
+    x->i = (x->i != HENCE_FALSE && y->i != HENCE_FALSE) ? (HENCE_TRUE) :
+        (HENCE_FALSE);
+    dirty_s(x);
 }
 
 void hence_bitwise_and(void)
 {
-    char s[12];  /* [\-][0-9]{1,10}\0 */
-    int x, y;
+    struct Heap_element *x, *y;
 
-    y = (int) strtol(__pop__(), NULL, 10);
-    x = (int) strtol(__pop__(), NULL, 10);
-    (void) snprintf(s, sizeof(char) * 12, "%d", x & y);
-    __push__(s);
+    check_stack_underflow();
+    y = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(y)) {
+        y->i = (int) Strtol(y->s, NULL, 10);
+        clean_i(y);
+    }
+    (void) __pop__();
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(x)) {
+        x->i = (int) Strtol(x->s, NULL, 10);
+        clean_i(x);
+    }
+
+    x->i = x->i & y->i;
+    dirty_s(x);
 }
 
 void hence_bitwise_not(void)
 {
-    char s[12];  /* [\-][0-9]{1,10}\0 */
-    int x;
+    struct Heap_element *x;
 
-    x = (int) strtol(__pop__(), NULL, 10);
-    (void) snprintf(s, sizeof(char) * 12, "%d", ~x);
-    __push__(s);
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(x)) {
+        x->i = (int) Strtol(x->s, NULL, 10);
+        clean_i(x);
+    }
+    x->i = ~x->i;
+    dirty_s(x);
 }
 
 void hence_bitwise_or(void)
 {
-    char s[12];  /* [\-][0-9]{1,10}\0 */
-    int x, y;
+    struct Heap_element *x, *y;
 
-    y = (int) strtol(__pop__(), NULL, 10);
-    x = (int) strtol(__pop__(), NULL, 10);
-    (void) snprintf(s, sizeof(char) * 12, "%d", x | y);
-    __push__(s);
+    check_stack_underflow();
+    y = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(y)) {
+        y->i = (int) Strtol(y->s, NULL, 10);
+        clean_i(y);
+    }
+    (void) __pop__();
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(x)) {
+        x->i = (int) Strtol(x->s, NULL, 10);
+        clean_i(x);
+    }
+
+    x->i = x->i | y->i;
+    dirty_s(x);
 }
 
 void hence_bitwise_shift_left(void)
 {
-    char s[12];  /* [\-][0-9]{1,10}\0 */
-    int x, y;
+    struct Heap_element *x, *y;
 
-    y = (int) strtol(__pop__(), NULL, 10);
-    x = (int) strtol(__pop__(), NULL, 10);
-    (void) snprintf(s, sizeof(char) * 12, "%d", y << x);
-    __push__(s);
+    check_stack_underflow();
+    y = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(y)) {
+        y->i = (int) Strtol(y->s, NULL, 10);
+        clean_i(y);
+    }
+    (void) __pop__();
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(x)) {
+        x->i = (int) Strtol(x->s, NULL, 10);
+        clean_i(x);
+    }
+
+    x->i = (y->i << x->i);
+    dirty_s(x);
 }
 
 void hence_bitwise_shift_right(void)
 {
-    char s[12];  /* [\-][0-9]{1,10}\0 */
-    int x, y;
+    struct Heap_element *x, *y;
 
-    y = (int) strtol(__pop__(), NULL, 10);
-    x = (int) strtol(__pop__(), NULL, 10);
-    (void) snprintf(s, sizeof(char) * 12, "%d", y >> x);
-    __push__(s);
+    check_stack_underflow();
+    y = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(y)) {
+        y->i = (int) Strtol(y->s, NULL, 10);
+        clean_i(y);
+    }
+    (void) __pop__();
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(x)) {
+        x->i = (int) Strtol(x->s, NULL, 10);
+        clean_i(x);
+    }
+
+    x->i = (y->i >> x->i);
+    dirty_s(x);
 }
 
 void hence_bitwise_xor(void)
 {
-    char s[12];  /* [\-][0-9]{1,10}\0 */
-    int x, y;
+    struct Heap_element *x, *y;
 
-    y = (int) strtol(__pop__(), NULL, 10);
-    x = (int) strtol(__pop__(), NULL, 10);
-    (void) snprintf(s, sizeof(char) * 12, "%d", x ^ y);
-    __push__(s);
+    check_stack_underflow();
+    y = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(y)) {
+        y->i = (int) Strtol(y->s, NULL, 10);
+        clean_i(y);
+    }
+    (void) __pop__();
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(x)) {
+        x->i = (int) Strtol(x->s, NULL, 10);
+        clean_i(x);
+    }
+
+    x->i = x->i ^ y->i;
+    dirty_s(x);
 }
 
 void hence_call(void)
 {
-    char x[256];
     int i;
 
-    (void) strncpy(x, __pop__(), 255);
-    x[255] = '\0';
     i = 0;
     while (Functions[i].name != NULL) {
-        if (strcmp(x, Functions[i].name) == 0) {
+        check_stack_underflow();
+        if (strcmp(Heap[Stack[Stack_ptr]].s, Functions[i].name) == 0) {
+            (void) __pop__();
             Functions[i].func();
             return;
         }
@@ -213,39 +499,45 @@ void hence_call(void)
 
 void hence_concatenate(void)
 {
-    char x[256], y[256];
-    char s[256];
+    char s[HEAP_ELEMENT_S_SIZE];
+    struct Heap_element *x, *y;
 
-    (void) strncpy(y, __pop__(), 255);
-    y[255] = '\0';
-    (void) strncpy(x, __pop__(), 255);
-    x[255] = '\0';
-    (void) snprintf(s, sizeof(char) * 256, "%s%s", y, x);
-    __push__(s);
+    check_stack_underflow();
+    y = &Heap[Stack[Stack_ptr]];
+    if (s_is_dirty(y)) {
+        sprintn(y->s, y->i);
+        clean_s(y);
+    }
+    (void) __pop__();
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (s_is_dirty(x)) {
+        sprintn(x->s, x->i);
+        clean_s(x);
+    }
+
+    (void) snprintf(s, sizeof(char) * HEAP_ELEMENT_S_SIZE, "%s%s", y->s, x->s);
+    (void) strncpy(x->s, s, HEAP_ELEMENT_S_SIZE - 1);
+    x->s[HEAP_ELEMENT_S_SIZE - 1] = '\0';
+    dirty_i(x);
 }
 
 void hence_debug(void)
 {
-    char v[STACK_SIZE][256];
-    int i, depth;
+    struct Heap_element *x;
+    int i;
 
-    __depth__();
-    depth = (int) strtol(__pop__(), NULL, 10);
-
-    for (i = 0; i < depth; ++i) {
-        (void) strncpy(v[i], __pop__(), 255);
-        v[i][255] = '\0';
+    (void) printf("[");
+    for (i = STACK_SIZE - 1; i >= Stack_ptr; --i) {
+        x = &Heap[Stack[i]];
+        if (s_is_dirty(x)) {
+            sprintn(x->s, x->i);
+            clean_s(x);
+        }
+        (void) printf(" '%s'%s", x->s, (i > Stack_ptr) ? (",") : (""));
     }
-    (void) printf("[ ");
-    for (i = depth - 1; i > 0; --i) {
-        (void) printf("\"%s\", ", v[i]);
-    }
-    (void) printf("\"%s\"", v[0]);
-    (void) printf(" ]\n");
-    i = depth - 1;
-    while (i >= 0) {
-        __push__(v[i--]);
-    }
+    (void) printf("%s]\n", (Stack_ptr != STACK_SIZE) ? (" ") : (""));
 }
 
 void hence_depth(void)
@@ -255,13 +547,25 @@ void hence_depth(void)
 
 void hence_divide(void)
 {
-    char s[12];  /* [\-][0-9]{1,10}\0 */
-    int x, y;
+    struct Heap_element *x, *y;
 
-    y = (int) strtol(__pop__(), NULL, 10);
-    x = (int) strtol(__pop__(), NULL, 10);
-    (void) snprintf(s, sizeof(char) * 12, "%d", y / x);
-    __push__(s);
+    check_stack_underflow();
+    y = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(y)) {
+        y->i = (int) Strtol(y->s, NULL, 10);
+        clean_i(y);
+    }
+    (void) __pop__();
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(x)) {
+        x->i = (int) Strtol(x->s, NULL, 10);
+        clean_i(x);
+    }
+
+    x->i = y->i / x->i;
+    dirty_s(x);
 }
 
 void hence_drop(void)
@@ -271,32 +575,82 @@ void hence_drop(void)
 
 void hence_equal(void)
 {
-    char x[256], y[256];
+    struct Heap_element *x, *y;
 
-    (void) strncpy(y,  __pop__(), 255);
-    y[255] = '\0';
-    (void) strncpy(x,  __pop__(), 255);
-    x[255] = '\0';
-    __push__((strcmp(x, y) == 0) ? (HENCE_TRUE) : (HENCE_FALSE));
+    check_stack_underflow();
+    y = &Heap[Stack[Stack_ptr]];
+    if (s_is_dirty(y)) {
+        sprintn(y->s, y->i);
+        clean_s(y);
+    }
+    (void) __pop__();
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (s_is_dirty(x)) {
+        sprintn(x->s, x->i);
+        clean_s(x);
+    }
+
+    x->i = (strcmp(x->s, y->s) == 0) ? (HENCE_TRUE) : (HENCE_FALSE);
+    clean_i(x);
+    dirty_s(x);
+}
+
+void hence_exit(void)
+{
+    struct Heap_element *x;
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(x)) {
+        x->i = (int) Strtol(x->s, NULL, 10);
+        clean_i(x);
+    }
+
+    exit(x->i);
+    dirty_s(x);
 }
 
 void hence_if(void)
 {
-    char cond_func[256], true_func[256], false_func[256];
-    char result[256];
+    char cond_func[HEAP_ELEMENT_S_SIZE], true_func[HEAP_ELEMENT_S_SIZE],
+        false_func[HEAP_ELEMENT_S_SIZE];
+    char result[HEAP_ELEMENT_S_SIZE];
+    struct Heap_element *x, *y, *z, *zz;
     int i;
 
-    (void) strncpy(cond_func,  __pop__(), 255);
-    cond_func[255] = '\0';
-    (void) strncpy(true_func,  __pop__(), 255);
-    true_func[255] = '\0';
-    (void) strncpy(false_func, __pop__(), 255);
-    false_func[255] = '\0';
+    check_stack_underflow();
+    z = &Heap[Stack[Stack_ptr]];
+    if (s_is_dirty(z)) {
+        runtime_error("invalid condition function");
+    }
+    (void) strncpy(cond_func, z->s, HEAP_ELEMENT_S_SIZE - 1);
+    cond_func[HEAP_ELEMENT_S_SIZE - 1] = '\0';
+    (void) __pop__();
+
+    check_stack_underflow();
+    y = &Heap[Stack[Stack_ptr]];
+    if (s_is_dirty(y)) {
+        runtime_error("invalid true function");
+    }
+    (void) strncpy(true_func, y->s, HEAP_ELEMENT_S_SIZE - 1);
+    true_func[HEAP_ELEMENT_S_SIZE - 1] = '\0';
+    (void) __pop__();
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (s_is_dirty(x)) {
+        runtime_error("invalid false function");
+    }
+    (void) strncpy(false_func, x->s, HEAP_ELEMENT_S_SIZE - 1);
+    false_func[HEAP_ELEMENT_S_SIZE - 1] = '\0';
+    (void) __pop__();
 
     i = 0;
     while (Functions[i].name != NULL) {
         if (strcmp(cond_func, Functions[i].name) == 0) {
-            Functions[i].func();
+            Functions[i].func();	/* call cond. func. */
             break;
         }
         ++i;
@@ -304,9 +658,16 @@ void hence_if(void)
     if (Functions[i].name == NULL) {
         runtime_error(NULL);
     }
-    (void) strncpy(result, __pop__(), 255);
-    result[255] = '\0';
-    if (strcmp(result, HENCE_FALSE) == 0) {
+
+    check_stack_underflow();
+    zz = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(zz)) {
+        zz->i = (int) Strtol(zz->s, NULL, 10);
+        clean_i(zz);
+    }
+    (void) __pop__();
+
+    if (zz->i == HENCE_FALSE) {
         i = 0;
         while (Functions[i].name != NULL) {
             if (strcmp(false_func, Functions[i].name) == 0) {
@@ -335,129 +696,228 @@ void hence_if(void)
 
 void hence_json_rpc(void)
 {
-    /* ... */
+    runtime_error("json-rpc not implemented");
 }
 
 void hence_length(void)
 {
-    char s[12];  /* [\-][0-9]{1,10}\0 */
-    int x;
+    struct Heap_element *x;
 
-    x = strlen(__pop__());
-    (void) snprintf(s, sizeof(char) * 12, "%d", x);
-    __push__(s);
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (s_is_dirty(x)) {
+        sprintn(x->s, x->i);
+        clean_s(x);
+    }
+
+    x->i = strlen(x->s);
+    clean_i(x);
+    dirty_s(x);
 }
 
 void hence_less_than(void)
 {
-    int x, y;
+    struct Heap_element *x, *y;
 
-    y = (int) strtol(__pop__(), NULL, 10);
-    x = (int) strtol(__pop__(), NULL, 10);
-    __push__((y < x) ? (HENCE_TRUE) : (HENCE_FALSE));
+    check_stack_underflow();
+    y = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(y)) {
+        y->i = (int) Strtol(y->s, NULL, 10);
+        clean_i(y);
+    }
+    (void) __pop__();
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(x)) {
+        x->i = (int) Strtol(x->s, NULL, 10);
+        clean_i(x);
+    }
+
+    x->i = (y->i < x->i) ? (HENCE_TRUE) : (HENCE_FALSE);
+    dirty_s(x);
 }
 
 void hence_modulo(void)
 {
-    char s[12];  /* [\-][0-9]{1,10}\0 */
-    int x, y;
+    struct Heap_element *x, *y;
 
-    y = (int) strtol(__pop__(), NULL, 10);
-    x = (int) strtol(__pop__(), NULL, 10);
-    (void) snprintf(s, sizeof(char) * 12, "%d", y % x);
-    __push__(s);
+    check_stack_underflow();
+    y = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(y)) {
+        y->i = (int) Strtol(y->s, NULL, 10);
+        clean_i(y);
+    }
+    (void) __pop__();
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(x)) {
+        x->i = (int) Strtol(x->s, NULL, 10);
+        clean_i(x);
+    }
+
+    x->i = y->i % x->i;
+    clean_i(x);
+    dirty_s(x);
 }
 
 void hence_not(void)
 {
-    __push__((strcmp(__pop__(), HENCE_FALSE) != 0) ? (HENCE_FALSE) :
-        (HENCE_TRUE));
+    struct Heap_element *x;
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(x)) {
+        x->i = (int) Strtol(x->s, NULL, 10);
+        clean_i(x);
+    }
+
+    x->i = (x->i != HENCE_FALSE) ? (HENCE_FALSE) : (HENCE_TRUE);
+    dirty_s(x);
 }
 
 void hence_or(void)
 {
-    char x[256], y[256];
+    struct Heap_element *x, *y;
 
-    (void) strncpy(y, __pop__(), 255);
-    y[255] = '\0';
-    (void) strncpy(x, __pop__(), 255);
-    x[255] = '\0';
-    __push__((strcmp(x, HENCE_FALSE) != 0 || strcmp(y, HENCE_FALSE) != 0) ?
-        (HENCE_TRUE) : (HENCE_FALSE));
+    check_stack_underflow();
+    y = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(y)) {
+        y->i = (int) Strtol(y->s, NULL, 10);
+        clean_i(y);
+    }
+    (void) __pop__();
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(x)) {
+        x->i = (int) Strtol(x->s, NULL, 10);
+        clean_i(x);
+    }
+
+    x->i = (x->i != HENCE_FALSE || y->i != HENCE_FALSE) ? (HENCE_TRUE) :
+        (HENCE_FALSE);
+    dirty_s(x);
 }
 
 void hence_pick(void)
 {
-    char v[256][256];
-    int i, n;
+    struct Heap_element *n;
 
-    n = (int) strtol(__pop__(), NULL, 10);
-    if (n < 0 || n > 255) {
-        runtime_error(NULL);
+    check_stack_underflow();
+    n = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(n)) {
+        n->i = (int) Strtol(n->s, NULL, 10);
+        clean_i(n);
     }
-    ++n;
-    for (i = 0; i < n; ++i) {
-        (void) strncpy(v[i], __pop__(), 255);
-        v[i][255] = '\0';
+    if (n->i < 0 || n->i > STACK_SIZE - Stack_ptr - 1) {	/* XXX OK? */
+        runtime_error("out of bounds");
     }
-    for (i = n - 1; i >= 0; --i) {
-        __push__(v[i]);
-    }
-    __push__(v[n - 1]);
+    (void) memcpy(n, &Heap[Stack[Stack_ptr + n->i + 1]],
+        sizeof(struct Heap_element));
 }
 
-void hence_print(void)
+void hence_read_line(void)
 {
-    (void) printf("%s", __pop__());
+    char s[HEAP_ELEMENT_S_SIZE];
+    struct Heap_element *x;
+
+    if (fgets(s, HEAP_ELEMENT_S_SIZE, stdin) == NULL) {
+        runtime_error("read error");
+    }
+    if (s[0] != '\0' && s[strlen(s) - 1] == '\n') {
+        s[strlen(s) - 1] = '\0';
+    }
+    __push__(s);
+
+    x = &Heap[Stack[Stack_ptr]];
+    dirty_i(x);
 }
 
 void hence_roll(void)
 {
-    char v[STACK_SIZE][256];
-    char x[256];
-    int i, n;
+    struct Heap_element *n;
+    int i, n_i, x;
 
-    n = (int) strtol(__pop__(), NULL, 10);
+    check_stack_underflow();
+    n = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(n)) {
+        n->i = (int) Strtol(n->s, NULL, 10);
+        clean_i(n);
+    }
+    (void) __pop__();
+    if (n->i < 0 || n->i > STACK_SIZE - Stack_ptr - 1) {	/* XXX OK? */
+        runtime_error("out of bounds");
+    }
 
-    for (i = 0; i <= n; ++i) {
-        (void) strncpy(v[i], __pop__(), 255);
-        v[i][255] = '\0';
+    n_i = n->i;
+    x = Stack[Stack_ptr + n_i];
+
+    for (i = n_i - 1; i >= 0; --i) {
+        Stack[Stack_ptr + i + 1] = Stack[Stack_ptr + i];
     }
-    (void) strncpy(x, v[--i], 255);
-    x[255] = '\0';
-    while (i > 0) {
-        __push__(v[--i]);
-    }
-    __push__(x);
+    Stack[Stack_ptr] = x;
 }
 
 void hence_substring(void)
 {
-    char string[256];
-    char result[256];
-    int start, length;
+    struct Heap_element *length, *start, *string;
+    char result[HEAP_ELEMENT_S_SIZE];
 
-    (void) strncpy(string, __pop__(), 255);
-    string[255] = '\0';
-    start = (int) strtol(__pop__(), NULL, 10);
-    length = (int) strtol(__pop__(), NULL, 10);
-    if (start > strlen(string) || length > 255) {
+    check_stack_underflow();
+    string = &Heap[Stack[Stack_ptr]];
+    if (s_is_dirty(string)) {
+        sprintn(string->s, string->i);
+        clean_s(string);
+    }
+    (void) __pop__();
+
+    check_stack_underflow();
+    start = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(start)) {
+        start->i = (int) Strtol(start->s, NULL, 10);
+        clean_i(start);
+    }
+    (void) __pop__();
+
+    check_stack_underflow();
+    length = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(length)) {
+        length->i = (int) Strtol(length->s, NULL, 10);
+        clean_i(length);
+    }
+    (void) __pop__();
+
+    if (start->i > strlen(string->s) || length->i > HEAP_ELEMENT_S_SIZE - 1) {
         runtime_error(NULL);
     }
-    (void) strncpy(result, &string[start], length);
-    result[255] = '\0';
+    (void) strncpy(result, &string->s[start->i], length->i);
+    result[length->i] = result[HEAP_ELEMENT_S_SIZE - 1] = '\0';
     __push__(result);
 }
 
 void hence_subtract(void)
 {
-    char s[12];  /* [\-][0-9]{1,10}\0 */
-    int x, y;
+    struct Heap_element *x, *y;
 
-    y = (int) strtol(__pop__(), NULL, 10);
-    x = (int) strtol(__pop__(), NULL, 10);
-    (void) snprintf(s, sizeof(char) * 12, "%d", x - y);
-    __push__(s);
+    check_stack_underflow();
+    y = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(y)) {
+        y->i = (int) Strtol(y->s, NULL, 10);
+        clean_i(y);
+    }
+    (void) __pop__();
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (i_is_dirty(x)) {
+        x->i = (int) Strtol(x->s, NULL, 10);
+        clean_i(x);
+    }
+
+    x->i = x->i - y->i;
+    dirty_s(x);
 }
 
 void hence_target(void)
@@ -467,14 +927,27 @@ void hence_target(void)
 
 void hence_while(void)
 {
-    char cond_func[256], loop_func[256];
-    char result[256];
+    char cond_func[HEAP_ELEMENT_S_SIZE], loop_func[HEAP_ELEMENT_S_SIZE];
+    struct Heap_element *x, *y, *z;
     int i, j;
 
-    (void) strncpy(cond_func,  __pop__(), 255);
-    cond_func[255] = '\0';
-    (void) strncpy(loop_func,  __pop__(), 255);
-    loop_func[255] = '\0';
+    check_stack_underflow();
+    y = &Heap[Stack[Stack_ptr]];
+    if (s_is_dirty(y)) {
+        runtime_error("invalid condition function");
+    }
+    (void) strncpy(cond_func, y->s, HEAP_ELEMENT_S_SIZE - 1);
+    cond_func[HEAP_ELEMENT_S_SIZE - 1] = '\0';
+    (void) __pop__();
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (s_is_dirty(x)) {
+         runtime_error("invalid loop function");
+    }
+    (void) strncpy(loop_func, x->s, HEAP_ELEMENT_S_SIZE - 1);
+    loop_func[HEAP_ELEMENT_S_SIZE - 1] = '\0';
+    (void) __pop__();
 
     i = 0;
     while (Functions[i].name != NULL) {
@@ -496,15 +969,35 @@ void hence_while(void)
     if (Functions[j].name == NULL) {
         runtime_error(NULL);
     }
-    Functions[i].func();
-    (void) strncpy(result, __pop__(), 255);
-    result[255] = '\0';
+    Functions[i].func();	/* call cond. func. */
 
-    while (strcmp(result, HENCE_FALSE) != 0) {
-        Functions[j].func();
+    FOREVER {
+        check_stack_underflow();
+        z = &Heap[Stack[Stack_ptr]];
+        if (i_is_dirty(z)) {
+            z->i = (int) Strtol(z->s, NULL, 10);
+            clean_i(z);
+        }
+        (void) __pop__();
 
-        Functions[i].func();
-        (void) strncpy(result, __pop__(), 255);
-        result[255] = '\0';
+        if (z->i != HENCE_FALSE) {
+            Functions[j].func();	/* call loop func. */
+            Functions[i].func();	/* call cond. func. */
+        } else {
+            break;
+        }
     }
+}
+
+void hence_write(void)
+{
+    struct Heap_element *s;
+
+    check_stack_underflow();
+    s = &Heap[Stack[Stack_ptr]];
+    if (s_is_dirty(s)) {
+        sprintn(s->s, s->i);
+        clean_s(s);
+    }
+    (void) fprintf(stdout, "%s", __pop__());
 }

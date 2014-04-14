@@ -1,4 +1,4 @@
 main
-    print_line "hello, world"
+  write-line 'hello, world'
 
-    [return] "0"
+  [return] '0'

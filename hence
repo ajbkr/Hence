@@ -11,7 +11,8 @@ $generate = array(
                 echo PHP_EOL;
             }
 
-            echo 'void ' . FUNCTION_PREFIX . $name . '(void)', PHP_EOL;
+            echo 'void ' . FUNCTION_PREFIX . str_replace('-', '_', $name) .
+                '(void)', PHP_EOL;
             echo '{', PHP_EOL;
         },
         'js'  => function($name, $functions) {
@@ -20,7 +21,8 @@ $generate = array(
                 echo PHP_EOL;
             }
 
-            echo 'var ' . FUNCTION_PREFIX . $name . ' = function() {', PHP_EOL;
+            echo 'var ' . FUNCTION_PREFIX . str_replace('-', '_', $name) .
+                ' = function() {', PHP_EOL;
         },
         'php' => function($name, $functions) {
             if (count($functions) > 1) {
@@ -28,38 +30,46 @@ $generate = array(
                 echo PHP_EOL;
             }
 
-            echo 'function ' . FUNCTION_PREFIX . $name . '()', PHP_EOL;
+            echo 'function ' . FUNCTION_PREFIX . str_replace('-', '_', $name) .
+                '()', PHP_EOL;
             echo '{', PHP_EOL;
         }
     ),
 
     'emit_function_call' => array(
         'c'   => function($name) {
-            if ($name == 'lcall') {
-                echo '    __lcall__();', PHP_EOL;
+            if ($name == 'call-native') {
+                echo '    __call_native__();', PHP_EOL;
             } else {
-                echo '    ' . FUNCTION_PREFIX . $name . '();', PHP_EOL;
+                echo '    (void) ' . FUNCTION_PREFIX .
+                    str_replace('-', '_', $name) . '();', PHP_EOL;
             }
         },
         'js'  => function($name) {
-            if ($name == 'lcall') {
-                echo '    libhence.__lcall__();', PHP_EOL;
+            if ($name == 'call-native') {
+                echo '    libhence.__call_native__();', PHP_EOL;
             } else {
-                echo '    ' . FUNCTION_PREFIX . $name . '();', PHP_EOL;
+                echo '    ' . FUNCTION_PREFIX . str_replace('-', '_', $name) .
+                    '();', PHP_EOL;
             }
         },
         'php' => function($name) {
-            if ($name == 'lcall') {
-                echo '    __lcall__();', PHP_EOL;
+            if ($name == 'call-native') {
+                echo '    __call_native__();', PHP_EOL;
             } else {
-                echo '    ' . FUNCTION_PREFIX . $name . '();', PHP_EOL;
+                echo '    ' . FUNCTION_PREFIX . str_replace('-', '_', $name) .
+                    '();', PHP_EOL;
             }
         }
     ),
 
     'emit_push' => array(
         'c'   => function($string) {
-            echo '    __push__("' . $string . '");', PHP_EOL;
+            if (is_numeric($string)) {
+                echo '    __pushi__(' . intval($string) . ');', PHP_EOL;
+            } else {
+                echo '    __push__("' . $string . '");', PHP_EOL;
+            }
         },
         'js'  => function($string) {
             echo '    libhence.__push__("' . $string . '");', PHP_EOL;
@@ -107,7 +117,8 @@ $generate = array(
             echo 'struct Function Functions[] = {', PHP_EOL;
             for ($i = 0; $i < count($functions); ++$i) {
                 echo '    { "' . $functions[$i] . '", ' .
-                    FUNCTION_PREFIX . $functions[$i] . ' },', PHP_EOL;
+                    FUNCTION_PREFIX . str_replace('-', '_', $functions[$i]) .
+                    ' },', PHP_EOL;
             }
             echo '    { NULL, NULL }', PHP_EOL;
             echo '};', PHP_EOL;
@@ -116,8 +127,15 @@ $generate = array(
             echo '/* entry point */', PHP_EOL;
             echo 'int main(void)', PHP_EOL;
             echo '{', PHP_EOL;
+            echo '    __init__();', PHP_EOL;
+            echo '    __call_native_init__();', PHP_EOL;
+            echo PHP_EOL;
+
             echo '    ' . FUNCTION_PREFIX . $functions[count($functions) - 1] .
                 '();', PHP_EOL;
+            echo PHP_EOL;
+
+            echo '    __call_native_fini__();', PHP_EOL;
             echo PHP_EOL;
 
             echo '    __depth__();', PHP_EOL;
@@ -135,15 +153,19 @@ $generate = array(
             echo 'Functions = {', PHP_EOL;
             for ($i = 0; $i < count($functions) - 1; ++$i) {
                 echo "    '" . $functions[$i] . "': " .
-                    FUNCTION_PREFIX . $functions[$i] . ",", PHP_EOL;
+                    FUNCTION_PREFIX . str_replace('-', '_', $functions[$i]) .
+                    ",", PHP_EOL;
             }
             echo "    '" . $functions[count($functions) - 1] . "': " .
-                FUNCTION_PREFIX . $functions[count($functions) - 1], PHP_EOL;
+                FUNCTION_PREFIX .
+                str_replace('-', '_', $functions[count($functions) - 1]),
+                PHP_EOL;
             echo '};', PHP_EOL;
             echo PHP_EOL;
 
             echo '// entry point', PHP_EOL;
-            echo FUNCTION_PREFIX . $functions[count($functions) - 1] .
+            echo FUNCTION_PREFIX .
+                str_replace('-', '_', $functions[count($functions) - 1]) .
                 '();', PHP_EOL;
             echo PHP_EOL;
 
@@ -160,16 +182,19 @@ $generate = array(
             echo '$Functions = array(', PHP_EOL;
             for ($i = 0; $i < count($functions) - 1; ++$i) {
                 echo "    '" . $functions[$i] . "' => '" .
-                    FUNCTION_PREFIX . $functions[$i] . "',", PHP_EOL;
+                    FUNCTION_PREFIX . str_replace('-', '_', $functions[$i]) .
+                    "',", PHP_EOL;
             }
             echo "    '" . $functions[count($functions) - 1] . "' => '" .
-                FUNCTION_PREFIX . $functions[count($functions) - 1] . "'",
+                FUNCTION_PREFIX .
+                str_replace('-', '_', $functions[count($functions) - 1]) . "'",
                 PHP_EOL;
             echo ');', PHP_EOL;
             echo PHP_EOL;
 
             echo '// entry point', PHP_EOL;
-            echo FUNCTION_PREFIX . $functions[count($functions) - 1] .
+            echo FUNCTION_PREFIX .
+                str_replace('-', '_', $functions[count($functions) - 1]) .
                 '();', PHP_EOL;
             echo PHP_EOL;
 
@@ -322,7 +347,7 @@ function main($argc, $argv)
                         syntax_error($line_no + 1);
                     }
                     break;
-                case '"':
+                case '\'':
                     if ($in_function_declaration) {
                         $in_function_declaration = FALSE;
                         $in_function = TRUE;
@@ -362,7 +387,7 @@ function main($argc, $argv)
                     break;
                 default:
                     if ($i == 0) {
-                        if (stripos('_ABCDEFGHIJKLMNOPQRSTUVWXYZ', $c) !==
+                        if (stripos('ABCDEFGHIJKLMNOPQRSTUVWXYZ_', $c) !==
                             FALSE) {
                             $in_function_declaration = TRUE;
                             $token .= $c;
@@ -370,7 +395,7 @@ function main($argc, $argv)
                             syntax_error($line_no + 1);
                         }
                     } else if ($in_function_declaration) {
-                        if (stripos('0123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                        if (stripos('-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_',
                             $c) !== FALSE) {
                             $token .= $c;
                         } else {
@@ -398,7 +423,7 @@ function main($argc, $argv)
 
             while (count($stack) > 0) {
                 $token = array_pop($stack);
-                if ($token{0} == '"' && $token{strlen($token) - 1} == '"') {
+                if ($token{0} == '\'' && $token{strlen($token) - 1} == '\'') {
                     $generate['emit_push'][$target](
                         substr($token, 1, strlen($token) - 2));
                 } else if ($token{0} == '[' &&

@@ -1,42 +1,38 @@
-number_of_bottles
-    subtract "1" [from] depth
+number-of-bottles
+  subtract '1' [from] depth
 
-variable
-    get
+value-of
+  get
 
-assign_to
-    set
+bottles-remaining
+  [compare] value-of 'number-of-bottles' [and] '0'
+  [return number of bottles is] greater-than [0]
 
-bottles_remaining
-    [compare] variable "number_of_bottles" [and] "0"
-    [return number of bottles is] greater_than [0]
+take-one-down
+  decrement-variable 'number-of-bottles'
 
-take_one_down
-    decrement variable "number_of_bottles"
-    [and] assign_to "number_of_bottles"
+write-s
+    write 's'
 
-print_s
-    print "s"
+write-number-of-bottles
+  write value-of 'number-of-bottles'
+  write ' bottle'
+  [compare] value-of 'number-of-bottles' [and] '1'
+  if [number of bottles is] 'not-equal' [to 1] 'write-s' [else] 'do-nothing'
+  write [TOS]
 
-print_number_of_bottles
-    print variable "number_of_bottles"
-    print " bottle"
-    [compare] variable "number_of_bottles" [and] "1"
-    if [number_of_bottles is] "not_equal" [to 1] "print_s" [else] "do_nothing"
-    print [TOS]
+write-verse
+  write-number-of-bottles ' of beer on the wall, '
+  write-number-of-bottles ' of beer.\n'
 
-print_verse
-    print_number_of_bottles " of beer on the wall, "
-    print_number_of_bottles " of beer.\n"
-
-    print "Take one down and pass it around, "
-    take_one_down
-    print_number_of_bottles " of beer on the wall.\n\n"
+  write 'Take one down and pass it around, '
+  take-one-down
+  write-number-of-bottles ' of beer on the wall.\n\n'
 
 main
-    reserve "1" [element at bottom-of-stack for number_of_bottles]
+  reserve '1' [element at bottom-of-stack for number-of-bottles]
 
-    set "number_of_bottles" [to] "99"
-    while "bottles_remaining" "print_verse"
+  set 'number-of-bottles' [to] '99'
+  while 'bottles-remaining' 'write-verse'
 
-    [return] "0"
+  [return] '0'

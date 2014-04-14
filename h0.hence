@@ -1,240 +1,259 @@
-[Standard Hence Library]
-[Copyright 2010-2012 Andrew J. Baker]
+[Standard Hence Runtime Library]
+[Copyright 2010-2014 Andrew J. Baker]
 
 and
-    lcall "and"
+  call-native 'and'
 
-bitwise_and
-    lcall "bitwise_and"
+bitwise-and
+  call-native 'bitwise-and'
 
-bitwise_not
-    lcall "bitwise_not"
+bitwise-not
+  call-native 'bitwise-not'
 
-bitwise_or
-    lcall "bitwise_or"
+bitwise-or
+  call-native 'bitwise-or'
 
-bitwise_shift_left
-    lcall "bitwise_shift_left"
+bitwise-shift-left
+  call-native 'bitwise-shift-left'
 
-bitwise_shift_right
-    lcall "bitwise_shift_right"
+bitwise-shift-right
+  call-native 'bitwise-shift-right'
 
-bitwise_xor
-    lcall "bitwise_xor"
+bitwise-xor
+  call-native 'bitwise-xor'
 
 call
-    lcall "call"
+  call-native 'call'
 
 concatenate
-    lcall "concatenate"
+  call-native 'concatenate'
 
 debug
-    lcall "debug"
+  call-native 'debug'
 
 depth
-    lcall "depth"
+  call-native 'depth'
 
 divide
-    lcall "divide"
+  call-native 'divide'
 
 drop
-    lcall "drop"
+  call-native 'drop'
 
 equal
-    lcall "equal"
+  call-native 'equal'
+
+exit
+  call-native 'exit'
 
 if
-    lcall "if"
+  call-native 'if'
 
-json_rpc
-    lcall "json_rpc"
+json-rpc
+  call-native 'json-rpc'
 
 length
-    lcall "length"
+  call-native 'length'
 
-less_than
-    lcall "less_than"
+less-than
+  call-native 'less-than'
 
 modulo
-    lcall "modulo"
+  call-native 'modulo'
 
 not
-    lcall "not"
+  call-native 'not'
 
 or
-    lcall "or"
+  call-native 'or'
 
 pick
-    lcall "pick"
+  call-native 'pick'
 
-print
-    lcall "print"
+read-line
+  call-native 'read-line'
 
 roll
-    lcall "roll"
+  call-native 'roll'
 
 substring
-    lcall "substring"
+  call-native 'substring'
 
 subtract
-    lcall "subtract"
+  call-native 'subtract'
 
 target
-    lcall "target"
+  call-native 'target'
 
 while
-    lcall "while"
+  call-native 'while'
+
+write
+  call-native 'write'
 
 [Synthesised functions]
 
+abort
+  write-line 'Abnormal program termination'
+  exit '1'
+
 _ss
-    subtract swap "0"
+  subtract swap '0'
 _dsl
-    less_than swap "0" duplicate
+  less-than swap '0' duplicate
 absolute
-    if "_dsl" "_ss" "do_nothing"
+  if '_dsl' '_ss' 'do-nothing'
 
 add
-    subtract subtract swap "0" swap
+  subtract subtract swap '0' swap
 
 append
-    concatenate swap
+  concatenate swap
 
 assign
-    set swap
+  set swap
 
 decrement
-    subtract "1"
+  subtract '1'
 
-divide_by
-    divide swap
+decrement-variable
+  set swap decrement get duplicate
 
-do_nothing
-    [no-op]
+divide-by
+  divide swap
+
+do-nothing
+  [no operation]
+
+drop-all
+  while 'depth' 'drop'
 
 dump
-    while "depth" "print_line"
+  while 'depth' 'write-line'
 
 duplicate
-    pick "0"
+  pick '0'
 
 false
-    "0"
+  '0'
 
 get
-    pick call
+  pick call
 
-greater_than
-    and not_equal rotate rotate greater_than_or_equal over over
+greater-than
+  and not-equal rotate rotate greater-than-or-equal over over
 
-greater_than_or_equal
-    not less_than
+greater-than-or-equal
+  not less-than
 
 increment
-    add "1"
+  add '1'
 
-less_than_or_equal
-    not greater_than
+increment-variable
+  set swap increment get duplicate
+
+less-than-or-equal
+  not greater-than
 
 _e
-    equal "1"
+  equal '1'
 _rdrarsrparrr
-    rotate
-    duplicate
-    rotate
-    add
-    rotate
-    swap
+  rotate
+  duplicate
+  rotate
+  add
+  rotate
+  swap
 
-    roll "3"
-    pick "2"
-    add
-    roll "3"
-    roll "3"
-    roll "3"
+  roll '3'
+  pick '2'
+  add
+  roll '3'
+  roll '3'
+  roll '3'
 _pn
-    pick "3"
-    not_equal "0"
+  pick '3'
+  not-equal '0'
 _mo
-    "-1"
+  '-1'
 _o
-    "1"
+  '1'
 _sl
-    less_than swap "0"
+  less-than swap '0'
 _oaoal
-    over
-    absolute
-    over
-    absolute
-    less_than
+  over
+  absolute
+  over
+  absolute
+  less-than
 multiply
-    if "_oaoal" "swap" "do_nothing"
+  if '_oaoal' 'swap' 'do-nothing'
 
-    over
-    if "_sl" "_o" "_mo"
+  over
+  if '_sl' '_o' '_mo'
 
-    "0"
-    while "_pn" "_rdrarsrparrr"
+  '0'
+  while '_pn' '_rdrarsrparrr'
 
-    roll "3"
-    drop
-    roll "2"
-    drop
+  roll '3'
+  drop
+  roll '2'
+  drop
 
-    swap
-    if "_e" "_ss" "do_nothing"
+  swap
+  if '_e' '_ss' 'do-nothing'
 
 negate
-    multiply "-1"
+  multiply '-1'
 
-not_equal
-    not equal
+not-equal
+  not equal
 
 over
-    pick "1"
+  pick '1'
 
-print_line
-    print append "\n"
+write-line
+  write append '\n'
 
 _sd
-    decrement swap [push] ""
+  decrement swap [push] ''
 _dsg
-    greater_than swap "0" duplicate
+  greater-than swap '0' duplicate
 reserve
-    drop while "_dsg" "_sd"
+  drop while '_dsg' '_sd'
 
 rotate
-    roll "2"
+  roll '2'
 
 _rrdirsri
-    rotate
-    rotate
-    duplicate
-    increment
-    roll
-    swap
-    roll "3"
-    increment
+  rotate
+  rotate
+  duplicate
+  increment
+  roll
+  swap
+  roll '3'
+  increment
 _rrdiirdri
-    rotate
-    rotate
-    duplicate
-    increment
-    increment
-    roll
-    drop
-    rotate
-    increment
+  rotate
+  rotate
+  duplicate
+  increment
+  increment
+  roll
+  drop
+  rotate
+  increment
 _ool
-    less_than over over
+  less-than over over
 set
-    "0" call
-    if "_ool" "_rrdiirdri" "do_nothing"
-    while "_ool" "_rrdirsri"
-    drop drop
+  '0' call
+  if '_ool' '_rrdiirdri' 'do-nothing'
+  while '_ool' '_rrdirsri'
+  drop drop
 
 swap
-    roll "1"
+  roll '1'
 
 true
-    "1"
+  '1'
