@@ -1,17 +1,20 @@
-x   subtract "1" [from] depth
-y   subtract "2" [from] depth
+x
+  subtract '1' [from] depth
+
+y
+  subtract '2' [from] depth
 
 main
-    [set x to] "foo"
-    [set y to] "bar"
+  [set x to] 'foo'
+  [set y to] 'bar'
 
-    print_line concatenate "x = " get "x"
-    print_line concatenate "y = " get "y"
+  write-line concatenate 'x = ' get 'x'
+  write-line concatenate 'y = ' get 'y'
 
-    set "x" [to] "baz"
-    set "y" [to] "quux"
+  set 'x' [to] 'baz'
+  set 'y' [to] 'quux'
 
-    print_line concatenate "x = " get "x"
-    print_line concatenate "y = " get "y"
+  write-line concatenate 'x = ' get 'x'
+  write-line concatenate 'y = ' get 'y'
 
-    [return] "0"
+  [return] '0'

@@ -1,18 +1,18 @@
 main
-    false
-    and false
-    print_line
+  false
+  and false
+  write-line
 
-    false
-    and true
-    print_line
+  false
+  and true
+  write-line
 
-    true
-    and false
-    print_line
+  true
+  and false
+  write-line
 
-    true
-    and true
-    print_line
+  true
+  and true
+  write-line
 
-    [return] "0"
+  [return] '0'

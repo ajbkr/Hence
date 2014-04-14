@@ -1,0 +1,6 @@
+main
+  '6'
+  bitwise-or '1'
+  write-line
+
+  [return] '0'

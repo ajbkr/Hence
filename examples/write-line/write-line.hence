@@ -1,0 +1,7 @@
+main
+  write-line '#'
+  write-line ''
+  write-line '#'
+  write-line ''
+
+  [return] '0'

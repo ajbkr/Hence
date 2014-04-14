@@ -1,0 +1,8 @@
+main
+  [push] '42'
+  duplicate
+  write-line
+  increment
+  write-line
+
+  [return] '0'

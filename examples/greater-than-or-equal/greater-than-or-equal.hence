@@ -1,0 +1,17 @@
+print-true
+  write-line 'true'
+
+print-false
+  write-line 'false'
+
+main
+  [compare] '4' [and] '3'
+  if [4 is] 'greater-than-or-equal' [to 3] 'print-true' [else] 'print-false'
+
+  [compare] '3' [and] '3'
+  if [3 is] 'greater-than-or-equal' [to 3] 'print-true' [else] 'print-false'
+
+  [compare] '2' [and] '3'
+  if [2 is] 'greater-than-or-equal' [to 3] 'print-true' [else] 'print-false'
+
+  [return] '0'

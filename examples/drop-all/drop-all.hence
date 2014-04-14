@@ -1,0 +1,11 @@
+main
+  [push] 'foo'
+  [push] 'bar'
+  [push] 'baz'
+  [push] 'quux'
+  debug
+
+  drop-all
+  debug
+
+  [return] '0'

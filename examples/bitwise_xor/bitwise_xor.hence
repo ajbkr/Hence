@@ -1,9 +1,0 @@
-main
-    bitwise_xor "64" "255"
-    duplicate
-    print_line
-
-    bitwise_xor "255"
-    print_line
-
-    [return] "0"

@@ -1,5 +1,5 @@
 main
-    [push] "a" "b" "c"
-    dump
+  [push] 'a' 'b' 'c'
+  dump
 
-    [return] "0"
+  [return] '0'

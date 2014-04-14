@@ -1,6 +1,6 @@
 main
-    "foo"
-    append "bar"
-    print_line
+  'foo'
+  append 'bar'
+  write-line
 
-    [return] "0"
+  [return] '0'

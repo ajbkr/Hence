@@ -1,10 +1,5 @@
 main
-    reserve "4"
+  reserve '4'
+  debug
 
-    print_line depth
-    print_line
-    print_line
-    print_line
-    print_line
-
-    [return] "0"
+  [return] '0'

@@ -1,9 +1,9 @@
 main
-    [push] "foo"
-    [push] "bar"
-    [push] "baz"
-    [push] "quux"
-    pick "1"
-    print_line
+  [push] 'foo'
+  [push] 'bar'
+  [push] 'baz'
+  [push] 'quux'
+  pick '1'
+  write-line
 
-    [return] "0"
+  [return] '0'

@@ -1,0 +1,5 @@
+main
+  exit '42'
+
+  [@unreachable@]
+  [return] '0'

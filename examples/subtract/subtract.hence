@@ -1,5 +1,8 @@
 main
-    subtract "3" [from] "69"
-    print_line
+  subtract '3' [from] '69'
+  write-line
 
-    [return] "0"
+  subtract '69' [from] '3'
+  write-line
+
+  [return] '0'

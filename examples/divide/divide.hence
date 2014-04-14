@@ -1,5 +1,5 @@
 main
-    divide "5" [by] "2"
-    print_line
+  divide '5' [by] '2'
+  write-line
 
-    [return] "0"
+  [return] '0'

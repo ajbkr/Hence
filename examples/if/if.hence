@@ -1,11 +1,12 @@
-print_false
-    print_line "false"
+print-false
+  write-line 'false'
 
-print_true
-    print_line "true"
+print-true
+  write-line 'true'
 
 main
-    if "true"  [then] "print_true" [else] "print_false"
-    if "false" [then] "print_true" [else] "print_false"
+  if 'true'  [then] 'print-true' [else] 'print-false'
 
-    [return] "0"
+  if 'false' [then] 'print-true' [else] 'print-false'
+
+  [return] '0'

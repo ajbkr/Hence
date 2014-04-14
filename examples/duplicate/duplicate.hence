@@ -1,7 +1,7 @@
 main
-    [push] "69"
-    duplicate
-    print_line
-    print_line
+  [push] '69'
+  duplicate
+  write-line
+  write-line
 
-    [return] "0"
+  [return] '0'

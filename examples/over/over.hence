@@ -1,5 +1,11 @@
 main
-    [push] "a" [and] "b"
-    print_line over
+  [push] 'a' [and] 'b'
+  debug
 
-    [return] "0"
+  over
+  debug
+
+  over
+  debug
+
+  [return] '0'

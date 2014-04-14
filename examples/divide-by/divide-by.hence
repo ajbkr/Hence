@@ -1,0 +1,6 @@
+main
+  '5'
+  divide-by '2'
+  write-line
+
+  [return] '0'

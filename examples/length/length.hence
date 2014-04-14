@@ -1,4 +1,4 @@
 main
-    print_line length "foobar"
+  write-line length 'foobar'
 
-    [return] "0"
+  [return] '0'

@@ -1,6 +1,0 @@
-main
-    "1"
-    bitwise_and "3"
-    print_line
-
-    [return] "0"

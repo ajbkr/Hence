@@ -1,7 +1,0 @@
-main
-    print_line "#"
-    print_line ""
-    print_line "#"
-    print_line ""
-
-    [return] "0"

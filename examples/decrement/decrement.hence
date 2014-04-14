@@ -1,4 +1,4 @@
 main
-    print_line decrement "42"
+  write-line decrement '42'
 
-    [return] "0"
+  [return] '0'

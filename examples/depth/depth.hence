@@ -1,8 +1,8 @@
 main
-    [push] "3"
-    [push] "2"
-    [push] "1"
-    depth
-    print_line
+  [push] '3'
+  [push] '2'
+  [push] '1'
+  depth
+  write-line
 
-    [return] "0"
+  [return] '0'

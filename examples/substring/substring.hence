@@ -1,4 +1,5 @@
 main
-    print_line substring [of] "foobarbaz" [starting at] "3" [with length] "3"
+  substring [of] 'foobarbaz' [starting at] '3' [with length] '3'
+  debug
 
-    [return] "0"
+  [return] '0'

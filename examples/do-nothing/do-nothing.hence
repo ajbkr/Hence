@@ -1,0 +1,6 @@
+main
+  [push] '42'
+  do-nothing
+  write-line depth
+
+  [return] '0'

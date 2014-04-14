@@ -1,0 +1,24 @@
+s
+  subtract '1' [from] depth
+
+init
+  reserve '1' [element at BOS]
+
+assign-to
+  set
+
+value-of
+  get
+
+main
+  init
+
+  write 'What is your name? '
+  read-line
+  [then] assign-to 's'
+
+  concatenate 'Hello ' [and] value-of 's'
+  append '!'
+  [then] write-line
+
+  [return] '0'

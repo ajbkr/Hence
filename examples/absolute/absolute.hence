@@ -1,5 +1,5 @@
 main
-    print_line absolute "42"
-    print_line absolute "-42"
+  write-line absolute '42'
+  write-line absolute '-42'
 
-    [return] "0"
+  [return] '0'

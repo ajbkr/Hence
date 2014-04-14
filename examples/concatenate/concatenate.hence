@@ -1,5 +1,5 @@
 main
-    concatenate "foo" [and] "bar"
-    print_line
+  concatenate 'foo' [and] 'bar'
+  write-line
 
-    [return] "0"
+  [return] '0'

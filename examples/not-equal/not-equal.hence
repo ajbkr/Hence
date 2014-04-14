@@ -1,0 +1,15 @@
+print-equal
+  write-line 'equal'
+
+print-not-equal
+  write 'not '
+  print-equal
+
+main
+  [compare] '76' [and] '76'
+  if [76 is] 'not-equal' [to 76] 'print-not-equal' [else] 'print-equal'
+
+  [compare] '67' [and] '76'
+  if [67 is] 'not-equal' [to 76] 'print-not-equal' [else] 'print-equal'
+
+  [return] '0'

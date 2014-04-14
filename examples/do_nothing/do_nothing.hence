@@ -1,6 +1,0 @@
-main
-    [push] "42"
-    do_nothing
-    print_line depth
-
-    [return] "0"

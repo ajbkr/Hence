@@ -1,0 +1,11 @@
+main
+  [compare] '0' [and] '1'
+  write-line less-than-or-equal
+
+  [compare] '7' [and] '2'
+  write-line less-than-or-equal
+
+  [compare] '7' [and] '7'
+  write-line less-than-or-equal
+
+  [return] '0'

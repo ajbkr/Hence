@@ -1,6 +1,8 @@
 main
-    "an" "a3" "a2" "a1" "a0"
-    roll "4"
-    dump
+  'an' 'a3' 'a2' 'a1' 'a0'
+  debug
 
-    [return] "0"
+  roll '4'
+  debug
+
+  [return] '0'

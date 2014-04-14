@@ -1,0 +1,7 @@
+main
+  abort
+
+  [@unreachable@]
+  write-line 'not aborted'
+
+  [return] '0'

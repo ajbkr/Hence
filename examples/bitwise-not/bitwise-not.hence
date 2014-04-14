@@ -1,0 +1,9 @@
+main
+  write-line duplicate '2'
+
+  bitwise-not '2'
+  write-line duplicate
+
+  write-line bitwise-not
+
+  [return] '0'

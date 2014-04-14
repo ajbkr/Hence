@@ -1,9 +1,9 @@
 main
-    negate "47"
-    duplicate
-    print_line
+  negate '47'
+  duplicate
+  write-line
 
-    negate
-    print_line
+  negate
+  write-line
 
-    [return] "0"
+  [return] '0'

@@ -1,0 +1,4 @@
+main
+  write-line bitwise-shift-left '1' [by] '8'
+
+  [return] '0'

@@ -1,7 +1,9 @@
 main
-    [push] "2"
-    [push] "7"
-    drop
-    print_line
+  [push] '2'
+  [push] '7'
+  debug
 
-    [return] "0"
+  drop
+  debug
+
+  [return] '0'

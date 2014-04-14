@@ -1,0 +1,16 @@
+main
+  [push] 'a'
+  [push] 'b'
+  [push] 'c'
+  debug
+
+  rotate
+  debug
+
+  rotate
+  debug
+
+  rotate
+  debug
+
+  [return] '0'

@@ -1,0 +1,16 @@
+i
+  subtract '1' [from] depth
+
+init
+  reserve '1' [element at BOS]
+
+main
+  init
+
+  set 'i' [to] '42'
+  decrement-variable 'i'
+
+  get 'i'
+  [then] write-line
+
+  [return] '0'

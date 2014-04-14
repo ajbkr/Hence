@@ -1,5 +1,5 @@
 main
-    print_line not true
-    print_line not false
+  write-line not true
+  write-line not false
 
-    [return] "0"
+  [return] '0'

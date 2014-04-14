@@ -1,7 +1,0 @@
-main
-    bitwise_not "2"
-    print_line duplicate
-
-    print_line bitwise_not
-
-    [return] "0"

@@ -1,4 +1,4 @@
 main
-    print_line false
+  write-line false
 
-    [return] "0"
+  [return] '0'

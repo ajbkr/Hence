@@ -1,0 +1,9 @@
+main
+  bitwise-xor '64' '255'
+  duplicate
+  write-line
+
+  bitwise-xor '255'
+  write-line
+
+  [return] '0'
