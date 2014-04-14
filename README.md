@@ -28,12 +28,16 @@ $ ./hello
 
 #### JavaScript ####
 
+**Currently unmaintained!**
+
 ```
 $ ./hence -tjs h0.hence hello.hence > hello.js
 $ node hello.js
 ```
 
 #### PHP ####
+
+**Currently unmaintained!**
 
 ```
 $ ./hence -tphp h0.hence hello.hence > hello.php
@@ -42,4 +46,4 @@ $ php hello.php
 
 ### TODO ###
 
-* Plenty
+- [ ] Plenty
