@@ -1,4 +1,4 @@
-#include <search.h>	/* hcreate(), hdestroy(), hsearch() */
+#include <search.h>	/* hcreate(), hsearch() */
 #include <stdlib.h>	/* EXIT_FAILURE, NULL, exit(), strtol() */
 #include <string.h>	/* memcpy(), strcmp(), strlen(), strncpy() */
 #include <errno.h>	/* errno */
@@ -257,7 +257,12 @@ void __call_native_init__(void)
 
 void __call_native_fini__(void)
 {
-    hdestroy();
+    /**
+     * Items added to the hash search table in __call_native_init__() are NOT
+     * allocated by malloc(). Given that __call_native_fini__() is only
+     * executed when a Hence program has finished executing, there is no
+     * current requirement to call hdestroy().
+     */
 }
 
 void __call_native__(void)
