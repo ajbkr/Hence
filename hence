@@ -41,8 +41,8 @@ $generate = array(
             if ($name == 'call-native') {
                 echo '    __call_native__();', PHP_EOL;
             } else {
-                echo '    (void) ' . FUNCTION_PREFIX .
-                    str_replace('-', '_', $name) . '();', PHP_EOL;
+                echo '    ' . FUNCTION_PREFIX . str_replace('-', '_', $name) .
+                    '();', PHP_EOL;
             }
         },
         'js'  => function($name) {
@@ -94,6 +94,12 @@ $generate = array(
     'emit_preamble' => array(
         'c'   => function() {
             echo '#include "libhence.h"', PHP_EOL;
+            echo PHP_EOL;
+
+            echo '#define FUNCTION_PREFIX' . "\t" . FUNCTION_PREFIX, PHP_EOL;
+            echo PHP_EOL;
+
+            echo '#include "h0.h"', PHP_EOL;
             echo PHP_EOL;
         },
         'js'  => function() {
