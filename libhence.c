@@ -1,3 +1,4 @@
+#include <inttypes.h>	/* int16_t, uint8_t */
 #include <search.h>	/* hcreate(), hsearch() */
 #include <stdlib.h>	/* EXIT_FAILURE, NULL, exit(), strtol() */
 #include <string.h>	/* memcpy(), strcmp(), strlen(), strncpy() */
@@ -8,13 +9,13 @@
 
 #define FOREVER	for ( ; ; )
 
-int Stack[STACK_SIZE];
-int Stack_ptr = STACK_SIZE;
+uint8_t Stack[STACK_SIZE];
+uint8_t Stack_ptr = STACK_SIZE;
 
 struct Heap_element Heap[STACK_SIZE];
 
-int Free_stack[STACK_SIZE];
-int Free_stack_ptr = STACK_SIZE;
+uint8_t Free_stack[STACK_SIZE];
+uint8_t Free_stack_ptr = STACK_SIZE;
 
 #define NUM_CALL_NATIVE_FUNCS	30 * 1.25F	/* grep call-native h0.hence |
 						   wc -l */

@@ -1,9 +1,10 @@
 #ifndef LIBHENCE_H
 #define LIBHENCE_H
 
+#include <inttypes.h>	/* int16_t, uint8_t */
 #include <stdlib.h>     /* NULL, strtol() */
 
-#define STACK_SIZE	1024
+#define STACK_SIZE	24
 
 void runtime_error(const char *msg);
 
@@ -54,15 +55,15 @@ struct Function {
     void (*func)(void);
 };
 
-#define HEAP_ELEMENT_S_SIZE	256
+#define HEAP_ELEMENT_S_SIZE	41
 
 #define HEAP_ELEMENT_FLAGS_S_DIRTY	0
 #define HEAP_ELEMENT_FLAGS_I_DIRTY	1
 
 struct Heap_element {
     char s[HEAP_ELEMENT_S_SIZE];
-    int i;
-    int flags;
+    int16_t i;
+    uint8_t flags;
 } __attribute__((packed, aligned(4)));
 
 #endif
