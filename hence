@@ -1,7 +1,7 @@
 #!/usr/bin/php -q
 <?php
 define('FUNCTION_PREFIX', 'xyzzy_');
-define('DEFAULT_TARGET', 'php');
+define('DEFAULT_TARGET', 'c');
 
 $generate = array(
     'emit_function' => array(
