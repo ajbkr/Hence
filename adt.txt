@@ -1,0 +1,26 @@
+     Stack                    Heap                Free_stack
+     =====                    ====                ==========
+
+                                                  +--------+
+                                               16 |  1280  |
+     +--------+               +--------+          +--------+
+4092 |     0  |          1024 |  ...   |       12 |  1024  | (TOS)
+     +--------+               +--------+          +--------+
+4088 |   256  |           512 | 'baz'  |          |     ?  |
+     +--------+               +--------+          +--------+
+4084 |   512  | (TOS)     256 | 'bar'  |          |     ?  |
+     +--------+               +--------+          +--------+
+     |     ?  |             0 | 'foo'  |          |     ?  |
+     +--------+               +--------+          +--------+
+
+     Stack_ptr = 4084                             Free_stack_ptr = 12
+
+__push__
+1. Pop next 'free' element from Free_stack.
+2. Assign corresponding Heap element with push'd string.
+3. Push Heap element address onto Stack.
+
+__pop__
+1. Pop Heap element address from Stack.
+2. Push Heap element address onto Free_stack.
+3. Return (now free'd) Heap element address.
