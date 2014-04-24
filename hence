@@ -204,7 +204,10 @@ $generate = array(
         },
         'ch8' => function($functions) {
 // XXX !
-            echo PHP_EOL;
+            if (count($functions) > 0) {
+                echo '    ret', PHP_EOL;
+                echo PHP_EOL;
+            }
 
             echo '; entry point', PHP_EOL;
             echo 'main:', PHP_EOL;
