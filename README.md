@@ -26,6 +26,17 @@ $ gcc -o hello hello.c libhence.o
 $ ./hello
 ```
 
+#### CHIP-8 ####
+
+**Work-in-progress!**
+
+```
+$ ./hence -tch8 h0.hence hello.hence > hello.m4
+$ m4 hello.m4 > hello.asm
+$ chasm hello.asm hello.ch8
+$ myChip8 hello.ch8
+```
+
 #### JavaScript ####
 
 **Currently unmaintained!**

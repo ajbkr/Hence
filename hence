@@ -15,6 +15,15 @@ $generate = array(
                 '(void)', PHP_EOL;
             echo '{', PHP_EOL;
         },
+        'ch8' => function($name, $functions) {
+            if (count($functions) > 1) {
+                echo '    ret', PHP_EOL;
+                echo PHP_EOL;
+            }
+
+            echo FUNCTION_PREFIX . str_replace('-', '_', $name) . ':',
+                PHP_EOL;
+        },
         'js'  => function($name, $functions) {
             if (count($functions) > 1) {
                 echo '};', PHP_EOL;
@@ -45,6 +54,14 @@ $generate = array(
                     '();', PHP_EOL;
             }
         },
+        'ch8' => function($name) {
+            if ($name == 'call-native') {
+                echo '    call __call_native__', PHP_EOL;
+            } else {
+                echo '    call ' . FUNCTION_PREFIX .
+                    str_replace('-', '_', $name), PHP_EOL;
+            }
+        },
         'js'  => function($name) {
             if ($name == 'call-native') {
                 echo '    libhence.__call_native__();', PHP_EOL;
@@ -71,6 +88,31 @@ $generate = array(
                 echo '    __push__("' . $string . '");', PHP_EOL;
             }
         },
+        'ch8' => function($string) {
+            if (is_numeric($string)) {
+                $int_val = intval($string);
+                if ($int_val < 0) {
+                    $int_val += 256;
+                }
+
+                echo '    ld v0,' . $int_val, PHP_EOL;
+                echo '    call __pushi__', PHP_EOL;
+            } else {
+                $l1 = make_label();
+                $l2 = make_label();
+
+                echo '    ld i,' . $l1, PHP_EOL;
+                echo '    jp ' . $l2, PHP_EOL;
+                echo $l1 . ':', PHP_EOL;
+                for ($i = 0; $i < strlen($string); ++$i) {
+                    echo '    db ' . ord($string{$i}) . "\t; " . $string{$i},
+                        PHP_EOL;
+                }
+                echo "    db 0\t; NUL", PHP_EOL;
+                echo $l2 . ':', PHP_EOL;
+                echo '    call __push__', PHP_EOL;
+            }
+        },
         'js'  => function($string) {
             echo '    libhence.__push__("' . $string . '");', PHP_EOL;
         },
@@ -82,6 +124,9 @@ $generate = array(
     'emit_comment' => array(
         'c'   => function($comment) {
             echo '    /* ' . $comment . ' */', PHP_EOL;
+        },
+        'ch8' => function($comment) {
+            echo '    ; ' . $comment, PHP_EOL;
         },
         'js'  => function($comment) {
             echo '    // ' . $comment, PHP_EOL;
@@ -101,6 +146,13 @@ $generate = array(
 
             echo '#include "h0.h"', PHP_EOL;
             echo PHP_EOL;
+        },
+        'ch8' => function() {
+            echo 'include(libhence.m4)dnl', PHP_EOL;
+            echo 'dnl', PHP_EOL;
+
+            echo 'define(FUNCTION_PREFIX,' . FUNCTION_PREFIX . ')dnl', PHP_EOL;
+            echo 'dnl', PHP_EOL;
         },
         'js'  => function() {
             echo "var libhence = require('./libhence');", PHP_EOL;
@@ -149,6 +201,27 @@ $generate = array(
                 PHP_EOL;
             echo '        ((int) strtol(__pop__(), NULL, 10)) : (0);', PHP_EOL;
             echo '}', PHP_EOL;
+        },
+        'ch8' => function($functions) {
+// XXX !
+            echo PHP_EOL;
+
+            echo '; entry point', PHP_EOL;
+            echo 'main:', PHP_EOL;
+            echo '    call __init__', PHP_EOL;
+            echo '    call __call_native_init__', PHP_EOL;
+            echo PHP_EOL;
+
+            echo '    call ' . FUNCTION_PREFIX .
+                $functions[count($functions) - 1], PHP_EOL;
+            echo PHP_EOL;
+
+            echo '    call __call_native_fini__', PHP_EOL;
+            echo PHP_EOL;
+
+            echo '    call __depth__', PHP_EOL;
+            echo '    ; ...', PHP_EOL;
+            echo '    ret', PHP_EOL;
         },
         'js'  => function($functions) {
             if (count($functions) > 0) {
@@ -211,6 +284,14 @@ $generate = array(
     )
 );
 
+$label_no = 0;
+
+function make_label() {
+  global $label_no;
+
+  return 'L' . ++$label_no;
+}
+
 function syntax_error($line_no) {
     file_put_contents('php://stderr', 'Syntax error on line ' . $line_no .
         PHP_EOL);
@@ -238,6 +319,7 @@ function main($argc, $argv)
         case 'target':
             switch ($options[$option]) {
             case 'c':
+            case 'ch8':
             case 'js':
             case 'php':
                 $target = $options[$option];
