@@ -1,0 +1,8 @@
+half
+  '30' [(30/60 = 1/2)]
+  drop [XXX args to beep not yet implemented]
+
+main
+  beep [for] half [a second]
+
+  [return] '0'
