@@ -19,6 +19,7 @@ char *__pop__(void);
 void __push__(char *);
 
 void hence_and(void);
+void hence_beep(void);
 void hence_bitwise_and(void);
 void hence_bitwise_not(void);
 void hence_bitwise_or(void);

@@ -17,7 +17,7 @@ struct Heap_element Heap[STACK_SIZE];
 uint8_t Free_stack[STACK_SIZE];
 uint8_t Free_stack_ptr = STACK_SIZE;
 
-#define NUM_CALL_NATIVE_FUNCS	30 * 1.25F	/* grep call-native h0.hence |
+#define NUM_CALL_NATIVE_FUNCS	31 * 1.25F	/* grep call-native h0.hence |
 						   wc -l */
 
 #define HENCE_FALSE     0
@@ -137,6 +137,10 @@ void __call_native_init__(void)
 
     item.key = "and";
     item.data = hence_and;
+    (void) hsearch(item, ENTER);
+
+    item.key = "beep";
+    item.data = hence_beep;
     (void) hsearch(item, ENTER);
 
     item.key = "bitwise-and";
@@ -355,6 +359,11 @@ void hence_and(void)
     x->i = (x->i != HENCE_FALSE && y->i != HENCE_FALSE) ? (HENCE_TRUE) :
         (HENCE_FALSE);
     dirty_s(x);
+}
+
+void hence_beep(void)
+{
+    runtime_error("beep not implemented");
 }
 
 void hence_bitwise_and(void)

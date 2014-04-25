@@ -6,6 +6,7 @@
 #define FUNCTION_DECL(name)	EVALUATOR(FUNCTION_PREFIX, name)
 
 void FUNCTION_DECL(and)(void);
+void FUNCTION_DECL(beep)(void);
 void FUNCTION_DECL(bitwise_and)(void);
 void FUNCTION_DECL(bitwise_not)(void);
 void FUNCTION_DECL(bitwise_or)(void);

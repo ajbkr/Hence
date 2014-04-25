@@ -4,7 +4,7 @@ dnl
 define(STACK_SIZE,10)dnl
 define(HEAP_ELEMENT_SIZE,40)dnl
 dnl
-define(NUM_CALL_NATIVE_FUNCS,30*1.25)dnl
+define(NUM_CALL_NATIVE_FUNCS,31*1.25)dnl
 dnl
 define(HENCE_FALSE,0)dnl
 define(HENCE_TRUE,1)dnl
@@ -124,6 +124,11 @@ __pushi__:
     ret
 
 hence_and:
+    ret
+
+hence_beep:
+    ld v0,30	; 1/2 second
+    ld st,v0
     ret
 
 hence_bitwise_and:

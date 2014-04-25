@@ -4,6 +4,9 @@
 and
   call-native 'and'
 
+beep
+  call-native 'beep'
+
 bitwise-and
   call-native 'bitwise-and'
 
