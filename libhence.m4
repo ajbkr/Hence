@@ -122,3 +122,134 @@ __push__:
 
 __pushi__:
     ret
+
+hence_and:
+    ret
+
+hence_bitwise_and:
+    ret
+
+hence_bitwise_not:
+    ret
+
+hence_bitwise_or:
+    ret
+
+hence_bitwise_shift_left:
+    ret
+
+hence_bitwise_shift_right:
+    ret
+
+hence_bitwise_xor:
+    ret
+
+hence_call:
+    ret
+
+hence_concatenate:
+    ret
+
+hence_debug:
+    ret
+
+hence_depth:
+    call __depth__
+    ret
+
+hence_divide:
+    ret
+
+hence_drop:
+    call __pop__
+    ret
+
+hence_equal:
+    ret
+
+hence_exit:
+    ret
+
+hence_if:
+    ret
+
+hence_json_rpc:
+    ld i,hence_json_rpc_L1
+    jp hence_json_rpc_L2
+hence_json_rpc_L1:
+    db 106	; j
+    db 115	; s
+    db 111	; o
+    db 110	; n
+    db 45	; -
+    db 114	; r
+    db 112	; p
+    db 99	; c
+    db 32	; SPACE
+    db 110	; n
+    db 111	; o
+    db 116	; t
+    db 32	; SPACE
+    db 105	; i
+    db 109	; m
+    db 112	; p
+    db 108	; l
+    db 101	; e
+    db 109	; m
+    db 101	; e
+    db 110	; n
+    db 116	; t
+    db 101	; e
+    db 100	; d
+    db 0	; NUL
+hence_json_rpc_L2:
+    call runtime_error
+    ret
+
+hence_length:
+    ret
+
+hence_less_than:
+    ret
+
+hence_modulo:
+    ret
+
+hence_not:
+    ret
+
+hence_or:
+    ret
+
+hence_pick:
+    ret
+
+hence_read_line:
+    ret
+
+hence_roll:
+    ret
+
+hence_substring:
+    ret
+
+hence_subtract:
+    ret
+
+hence_target:
+    ld i,hence_target_L1
+    jp hence_target_L2
+hence_target_L1:
+    db 99	; c
+    db 104	; h
+    db 56	; 8
+    db 0	; NUL
+hence_target_L2:
+    call __push__
+    ret
+
+hence_while:
+    ret
+
+hence_write:
+    ret
