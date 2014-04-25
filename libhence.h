@@ -4,7 +4,7 @@
 #include <inttypes.h>	/* int16_t, uint8_t */
 #include <stdlib.h>     /* NULL, strtol() */
 
-#define STACK_SIZE	24
+#define STACK_SIZE	10
 
 void runtime_error(const char *msg);
 
@@ -55,7 +55,7 @@ struct Function {
     void (*func)(void);
 };
 
-#define HEAP_ELEMENT_S_SIZE	41
+#define HEAP_ELEMENT_S_SIZE	37
 
 #define HEAP_ELEMENT_FLAGS_S_DIRTY	0
 #define HEAP_ELEMENT_FLAGS_I_DIRTY	1

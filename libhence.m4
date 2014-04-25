@@ -1,8 +1,8 @@
 define(`for',`ifelse($#,0,``$0'',`ifelse(eval($2<$3),1,
     `pushdef(`$1',$2)$4`'popdef(`$1')$0(`$1',incr($2),$3,`$4')')')')dnl
 dnl
-define(STACK_SIZE,24)dnl
-define(HEAP_ELEMENT_SIZE,44)dnl
+define(STACK_SIZE,10)dnl
+define(HEAP_ELEMENT_SIZE,40)dnl
 dnl
 define(NUM_CALL_NATIVE_FUNCS,30*1.25)dnl
 dnl
@@ -60,15 +60,11 @@ for(`x',0,STACK_SIZE,`    db 0	; s
     db 0
     db 0
     db 0
-    db 0
-    db 0
-    db 0
-    db 0
     db 0	; i
     db 0
     db 0	; flags
-')
 
+')dnl
 Free_stack:
 for(`x',0,STACK_SIZE,`    db 0
 ')dnl
