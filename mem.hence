@@ -1,0 +1,48 @@
+stack-size
+  '24'
+
+stack-ptr-size
+  '1'
+
+stack-element-size
+  '1'
+
+heap-element-s-size
+  add '40' [and] '1'
+
+heap-element-i-size
+  '2'
+
+heap-element-flags-size
+  '1'
+
+heap-element-size
+  add heap-element-s-size [and] heap-element-i-size
+  add heap-element-flags-size
+
+free-stack-element-size
+  '1'
+
+free-stack-ptr-size
+  '1'
+
+print
+  write-line
+
+main
+  print concatenate '#define STACK_SIZE\t' [and] stack-size
+  print concatenate '#define HEAP_ELEMENT_S_SIZE\t' [and] heap-element-s-size
+
+  print ''
+
+  multiply stack-element-size [by] stack-size
+  add stack-ptr-size [to total]
+
+  multiply heap-element-size [by] stack-size
+  add [to total]
+
+  multiply free-stack-element-size [by] stack-size
+  add free-stack-ptr-size
+  add [to total]
+
+  print append ' byte(s) */' [to] concatenate '/* ' [and total]
