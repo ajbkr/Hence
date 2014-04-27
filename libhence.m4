@@ -73,10 +73,10 @@ define(epilog,`ld ve,vd	; assign frame pointer to stack pointer
 dnl
 ifelse(`
  *
- * peekb -- get a byte relative to frame pointer (into V0)
+ * fpeekb -- get a byte relative to frame pointer (into V0)
  *
 ')dnl
-define(peekb,`ld i,__stk__
+define(fpeekb,`ld i,__stk__
     ld vc,ifelse(eval($1<0),1,eval(256+$1),$1)
     add vc,vd
     add i,vc
@@ -84,10 +84,10 @@ define(peekb,`ld i,__stk__
 dnl
 ifelse(`
  *
- * pokeb -- set a byte (held in V0) relative to frame pointer
+ * fpokeb -- set a byte (held in V0) relative to frame pointer
  *
 ')dnl
-define(pokeb,`ld i,__stk__
+define(fpokeb,`ld i,__stk__
     ld vc,ifelse(eval($1<0),1,eval(256+$1),$1)
     add vc,vd
     add i,vc
@@ -110,16 +110,16 @@ foo:
     prolog(2)
 
     ld v0,#42
-    pokeb(-1)
+    fpokeb(-1)
 
     ld v0,#69
-    pokeb(-2)
+    fpokeb(-2)
 
-    peekb(-1)
+    fpeekb(-1)
 
-    peekb(-2)
+    fpeekb(-2)
 
-    peekb(1)
+    fpeekb(1)
 
     epilog
 
