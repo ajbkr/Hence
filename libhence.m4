@@ -9,11 +9,77 @@ dnl
 define(HENCE_FALSE,0)dnl
 define(HENCE_TRUE,1)dnl
 dnl
+define(__stklen__,32)dnl
+dnl
+define(popb,`ld i,__stk__
+    add i,ve
+    ld v0,[i]
+    add ve,1')dnl
+dnl
+define(popw,`ld i,__stk__
+    add i,ve
+    ld v1,[i]
+    add ve,2')dnl
+dnl
+define(pushb,`ld i,__stk__
+    add ve,255	; VE = VE - 1
+    add i,ve
+    ld [i],v0')dnl
+define(pushw,`ld i,__stk__
+    add ve,254	; VE = VE - 2
+    add i,ve
+    ld [i],v1')dnl
+dnl
+define(prolog,`ld v0,vd
+    pushb	; push frame pointer
+    ld vd,ve	; assign stack pointer to frame pointer
+ifelse($1,`0',`',`    add ve,eval(256-$1)	; allocate local vars (VE = VE - $1)')')dnl
+dnl
+define(epilog,`ld ve,vd	; assign frame pointer to stack pointer
+    popb	; pop frame pointer
+    ld vd,v0
+    ret')dnl
+dnl
+define(peekb,`ld i,__stk__
+    ld vc,ifelse(eval($1<0),1,eval(256+$1),$1)
+    add vc,vd
+    add i,vc
+    ld v0,[i]')dnl
+dnl
+define(pokeb,`ld i,__stk__
+    ld vc,ifelse(eval($1<0),1,eval(256+$1),$1)
+    add vc,vd
+    add i,vc
+    ld [i],v0')dnl
+dnl
 start:
-    call main
+    ld ve,__stklen__	; initialise stack pointer
+
+    call foo
+
+;    call main
 
 halt:
     jp halt
+
+foo:
+    prolog(2)
+
+    ld v0,#42
+    pokeb(-1)
+
+    ld v0,#69
+    pokeb(-2)
+
+    peekb(-1)
+
+    peekb(-2)
+
+    epilog
+
+__stk__:
+for(`x',0,__stklen__,`    db 0
+')dnl
 
 Stack:
 for(`x',0,STACK_SIZE,`    db 0
