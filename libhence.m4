@@ -11,41 +11,82 @@ define(HENCE_TRUE,1)dnl
 dnl
 define(__stklen__,32)dnl
 dnl
+ifelse(`
+ *
+ * popb -- pop a byte from the stack (into V0)
+ *
+')dnl
 define(popb,`ld i,__stk__
     add i,ve
     ld v0,[i]
     add ve,1')dnl
 dnl
+ifelse(`
+ *
+ * popw -- pop a word from the stack (into V0:V1)
+ *
+')dnl
 define(popw,`ld i,__stk__
     add i,ve
     ld v1,[i]
     add ve,2')dnl
 dnl
+ifelse(`
+ *
+ * pushb -- push a byte (in V0) onto the stack
+ *
+')dnl
 define(pushb,`ld i,__stk__
     add ve,255	; VE = VE - 1
     add i,ve
     ld [i],v0')dnl
+dnl
+ifelse(`
+ *
+ * pushw -- push a word (in V0:V1) onto the stack
+ *
+')dnl
 define(pushw,`ld i,__stk__
     add ve,254	; VE = VE - 2
     add i,ve
     ld [i],v1')dnl
 dnl
+ifelse(`
+ *
+ * prolog -- function prologue (make stack frame for procedure parameters)
+ *
+')dnl
 define(prolog,`ld v0,vd
     pushb	; push frame pointer
     ld vd,ve	; assign stack pointer to frame pointer
 ifelse($1,`0',`',`    add ve,eval(256-$1)	; allocate local vars (VE = VE - $1)')')dnl
 dnl
+ifelse(`
+ *
+ * epilog -- function epilogue (high level procedure exit)
+ *
+')dnl
 define(epilog,`ld ve,vd	; assign frame pointer to stack pointer
     popb	; pop frame pointer
     ld vd,v0
     ret')dnl
 dnl
+ifelse(`
+ *
+ * peekb -- get a byte relative to frame pointer (into V0)
+ *
+')dnl
 define(peekb,`ld i,__stk__
     ld vc,ifelse(eval($1<0),1,eval(256+$1),$1)
     add vc,vd
     add i,vc
     ld v0,[i]')dnl
 dnl
+ifelse(`
+ *
+ * pokeb -- set a byte (held in V0) relative to frame pointer
+ *
+')dnl
 define(pokeb,`ld i,__stk__
     ld vc,ifelse(eval($1<0),1,eval(256+$1),$1)
     add vc,vd
@@ -55,7 +96,10 @@ dnl
 start:
     ld ve,__stklen__	; initialise stack pointer
 
+    ld v0,#ab
+    pushb
     call foo
+    add ve,1
 
 ;    call main
 
@@ -74,6 +118,8 @@ foo:
     peekb(-1)
 
     peekb(-2)
+
+    peekb(1)
 
     epilog
 
