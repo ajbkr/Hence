@@ -84,6 +84,17 @@ define(fpeekb,`ld i,__stk__
 dnl
 ifelse(`
  *
+ * fpeekw -- get a word relative to frame pointer (into V0:V1)
+ *
+')dnl
+define(fpeekw,`ld i,__stk__
+    ld vc,ifelse(eval($1<0),1,eval(256+$1),$1)
+    add vc,vd
+    add i,vc
+    ld v1,[i]')dnl
+dnl
+ifelse(`
+ *
  * fpokeb -- set a byte (held in V0) relative to frame pointer
  *
 ')dnl
@@ -93,6 +104,33 @@ define(fpokeb,`ld i,__stk__
     add i,vc
     ld [i],v0')dnl
 dnl
+ifelse(`
+ *
+ * fpokew -- set a word (held in V0:V1) relative to frame pointer
+ *
+')dnl
+define(fpokew,`ld i,__stk__
+    ld vc,ifelse(eval($1<0),1,eval(256+$1),$1)
+    add vc,vd
+    add i,vc
+    ld [i],v1')dnl
+dnl
+ifelse(`
+ *
+ * fldi -- set I to word, relative to frame pointer
+ *
+')dnl
+define(fldi,`fpeekw($1)
+    ld vc,#0f
+    and v0,vc
+    ld vc,#a0
+    or v0,vc
+    ld i,L$2
+    ld [i],v1
+L$2:
+    db 0
+    db 0')dnl
+dnl
 start:
     ld ve,__stklen__	; initialise stack pointer
 
@@ -100,6 +138,11 @@ start:
     pushb
     call foo
     add ve,1
+
+    ld v0,#0f
+    ld v1,#ff
+    pushw
+    call test_fldi
 
 ;    call main
 
@@ -120,6 +163,13 @@ foo:
     fpeekb(-2)
 
     fpeekb(1)
+
+    epilog
+
+test_fldi:
+    prolog(0)
+
+    fldi(1,__line__)
 
     epilog
 
