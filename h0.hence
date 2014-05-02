@@ -25,9 +25,6 @@ bitwise-shift-right
 bitwise-xor
   call-native 'bitwise-xor'
 
-call
-  call-native 'call'
-
 concatenate
   call-native 'concatenate'
 
@@ -115,6 +112,9 @@ append
 
 assign
   set swap
+
+call
+  if 'false' 'do-nothing' [else call TOS]
 
 decrement
   subtract '1'

@@ -17,7 +17,7 @@ struct Heap_element Heap[STACK_SIZE];
 uint8_t Free_stack[STACK_SIZE];
 uint8_t Free_stack_ptr = STACK_SIZE;
 
-#define NUM_CALL_NATIVE_FUNCS	31 * 1.25F	/* grep call-native h0.hence |
+#define NUM_CALL_NATIVE_FUNCS	30 * 1.25F	/* grep call-native h0.hence |
 						   wc -l */
 
 #define HENCE_FALSE     0
@@ -165,10 +165,6 @@ void __call_native_init__(void)
 
     item.key = "bitwise-xor";
     item.data = hence_bitwise_xor;
-    (void) hsearch(item, ENTER);
-
-    item.key = "call";
-    item.data = hence_call;
     (void) hsearch(item, ENTER);
 
     item.key = "concatenate";
@@ -493,23 +489,6 @@ void hence_bitwise_xor(void)
 
     x->i = x->i ^ y->i;
     dirty_s(x);
-}
-
-void hence_call(void)
-{
-    int i;
-
-    i = 0;
-    while (Functions[i].name != NULL) {
-        check_stack_underflow();
-        if (strcmp(Heap[Stack[Stack_ptr]].s, Functions[i].name) == 0) {
-            (void) __pop__();
-            Functions[i].func();
-            return;
-        }
-        ++i;
-    }
-    runtime_error(NULL);
 }
 
 void hence_concatenate(void)
