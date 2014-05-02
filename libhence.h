@@ -26,7 +26,6 @@ void hence_bitwise_or(void);
 void hence_bitwise_shift_left(void);
 void hence_bitwise_shift_right(void);
 void hence_bitwise_xor(void);
-void hence_call(void);
 void hence_concatenate(void);
 void hence_debug(void);
 void hence_depth(void);
