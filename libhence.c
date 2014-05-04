@@ -49,7 +49,7 @@ void runtime_error(const char *msg)
     exit(EXIT_FAILURE);
 }
 
-static int free_stack_pop(void)
+static uint8_t free_stack_pop(void)
 {
     if (Free_stack_ptr >= STACK_SIZE) {
         runtime_error("free stack underflow");
@@ -57,7 +57,7 @@ static int free_stack_pop(void)
     return Free_stack[Free_stack_ptr++];
 }
 
-static void free_stack_push(int x)
+static void free_stack_push(uint8_t x)
 {
     if (Free_stack_ptr < 1) {
         runtime_error("free stack overflow");
@@ -65,13 +65,13 @@ static void free_stack_push(int x)
     Free_stack[--Free_stack_ptr] = x;
 }
 
-static int stack_pop(void)
+static uint8_t stack_pop(void)
 {
     check_stack_underflow();
     return Stack[Stack_ptr++];
 }
 
-static void stack_push(int x)
+static void stack_push(uint8_t x)
 {
     if (Stack_ptr < 1) {
         runtime_error("stack overflow");
@@ -117,12 +117,15 @@ static long Strtol(const char *nptr, char **endptr, int base)
     if (errno != 0) {
         runtime_error("unable to convert string to integer");
     }
+    if (l < -32768 || l > 32767) {
+        runtime_error("out of range");
+    }
     return l;
 }
 
 void __init__(void)
 {
-    int i;
+    uint8_t i;
 
     for (i = 0; i < STACK_SIZE; ++i) {
         free_stack_push(i);
@@ -299,7 +302,7 @@ void __depth__(void)
 
 char *__pop__(void)
 {
-    int x;
+    uint8_t x;
 
     x = stack_pop();
     free_stack_push(x);
@@ -309,7 +312,7 @@ char *__pop__(void)
 void __push__(char *s)
 {
     struct Heap_element *e;
-    int x;
+    uint8_t x;
 
     x = free_stack_pop();
     e = &Heap[x];
@@ -320,10 +323,10 @@ void __push__(char *s)
     stack_push(x);
 }
 
-void __pushi__(int i)
+void __pushi__(int16_t i)
 {
     struct Heap_element *e;
-    int x;
+    uint8_t x;
 
     x = free_stack_pop();
     e = &Heap[x];
@@ -520,7 +523,7 @@ void hence_concatenate(void)
 void hence_debug(void)
 {
     struct Heap_element *x;
-    int i;
+    uint8_t i;
 
     (void) printf("[");
     for (i = STACK_SIZE - 1; i >= Stack_ptr; --i) {
@@ -612,7 +615,7 @@ void hence_if(void)
         false_func[HEAP_ELEMENT_S_SIZE];
     char result[HEAP_ELEMENT_S_SIZE];
     struct Heap_element *x, *y, *z, *zz;
-    int i;
+    int16_t i;
 
     check_stack_underflow();
     z = &Heap[Stack[Stack_ptr]];
@@ -832,7 +835,8 @@ void hence_read_line(void)
 void hence_roll(void)
 {
     struct Heap_element *n;
-    int i, n_i, x;
+    int16_t n_i;
+    uint8_t i, x;
 
     check_stack_underflow();
     n = &Heap[Stack[Stack_ptr]];
@@ -923,6 +927,7 @@ void hence_while(void)
 {
     char cond_func[HEAP_ELEMENT_S_SIZE], loop_func[HEAP_ELEMENT_S_SIZE];
     struct Heap_element *x, *y, *z;
+/*    int16_t i, j;*/
     int i, j;
 
     check_stack_underflow();

@@ -82,8 +82,9 @@ $generate = array(
 
     'emit_push' => array(
         'c'   => function($string) {
-            if (is_numeric($string)) {
-                echo '    __pushi__(' . intval($string) . ');', PHP_EOL;
+            if (is_numeric($string) && ($int_val = intval($string)) >= -32768 &&
+                $int_val <= 32767) {
+                echo '    __pushi__(' . $int_val . ');', PHP_EOL;
             } else {
                 echo '    __push__("' . $string . '");', PHP_EOL;
             }
