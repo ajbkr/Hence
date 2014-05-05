@@ -1,7 +1,7 @@
 main
-  [push] '3'
-  [push] '2'
-  [push] '1'
+  [push] 'c'
+  [push] 'b'
+  [push] 'a'
   depth
   write-line
 
