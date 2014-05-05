@@ -16,7 +16,9 @@ void __call_native__(void);
 
 void __depth__(void);
 char *__pop__(void);
+int16_t __popi__(void);
 void __push__(char *);
+void __pushi__(int16_t i);
 
 void hence_and(void);
 void hence_beep(void);

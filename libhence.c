@@ -294,10 +294,22 @@ void __call_native__(void)
 
 void __depth__(void)
 {
-    char s[12];  /* [\-][0-9]{1,10}\0 */
+    __pushi__(STACK_SIZE - Stack_ptr);
+}
 
-    sprintn(s, STACK_SIZE - Stack_ptr);
-    __push__(s);
+int16_t __popi__(void)
+{
+    struct Heap_element *e;
+    uint8_t x;
+
+    x = stack_pop();
+    e = &Heap[x];
+    if (i_is_dirty(e)) {
+        e->i = (int) Strtol(e->s, NULL, 10);
+        clean_i(e);
+    }
+    free_stack_push(x);
+    return Heap[x].i;
 }
 
 char *__pop__(void)
@@ -307,6 +319,19 @@ char *__pop__(void)
     x = stack_pop();
     free_stack_push(x);
     return Heap[x].s;
+}
+
+void __pushi__(int16_t i)
+{
+    struct Heap_element *e;
+    uint8_t x;
+
+    x = free_stack_pop();
+    e = &Heap[x];
+    e->i = i;
+    clean_i(e);
+    dirty_s(e);
+    stack_push(x);
 }
 
 void __push__(char *s)
@@ -320,19 +345,6 @@ void __push__(char *s)
     e->s[HEAP_ELEMENT_S_SIZE - 1] = '\0';
     clean_s(e);
     dirty_i(e);
-    stack_push(x);
-}
-
-void __pushi__(int16_t i)
-{
-    struct Heap_element *e;
-    uint8_t x;
-
-    x = free_stack_pop();
-    e = &Heap[x];
-    e->i = i;
-    clean_i(e);
-    dirty_s(e);
     stack_push(x);
 }
 
@@ -835,8 +847,9 @@ void hence_read_line(void)
 void hence_roll(void)
 {
     struct Heap_element *n;
-    int16_t n_i;
-    uint8_t i, x;
+/*    int16_t n_i;
+    uint8_t i, x;*/
+    int i, n_i, x;
 
     check_stack_underflow();
     n = &Heap[Stack[Stack_ptr]];
@@ -927,7 +940,6 @@ void hence_while(void)
 {
     char cond_func[HEAP_ELEMENT_S_SIZE], loop_func[HEAP_ELEMENT_S_SIZE];
     struct Heap_element *x, *y, *z;
-/*    int16_t i, j;*/
     int i, j;
 
     check_stack_underflow();

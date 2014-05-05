@@ -198,9 +198,7 @@ $generate = array(
             echo PHP_EOL;
 
             echo '    __depth__();', PHP_EOL;
-            echo '    return ((int) strtol(__pop__(), NULL, 10) > 0) ?',
-                PHP_EOL;
-            echo '        ((int) strtol(__pop__(), NULL, 10)) : (0);', PHP_EOL;
+            echo '    return (__popi__() > 0) ? (__popi__()) : (0);', PHP_EOL;
             echo '}', PHP_EOL;
         },
         'ch8' => function($functions) {
