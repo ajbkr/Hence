@@ -460,6 +460,7 @@ function main($argc, $argv)
                         $token .= $c;
                     }
                     break;
+                case "\t":
                 case ' ':
                     if ($in_function_declaration) {
                         $in_function_declaration = FALSE;
