@@ -46,6 +46,9 @@ equal
 exit
   call-native 'exit'
 
+hexadecimal
+  call-native 'hexadecimal'
+
 if
   call-native 'if'
 

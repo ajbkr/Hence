@@ -1,0 +1,7 @@
+main
+  write-line hexadecimal 'f'
+  write-line hexadecimal 'ff'
+  write-line hexadecimal 'fff'
+  [write-line hexadecimal 'ffff']
+
+  [return] '0'

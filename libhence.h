@@ -36,6 +36,7 @@ void hence_drop(void);
 void hence_duplicate(void);
 void hence_equal(void);
 void hence_exit(void);
+void hence_hexadecimal(void);
 void hence_if(void);
 void hence_json_rpc(void);
 void hence_length(void);

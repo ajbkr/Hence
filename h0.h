@@ -20,6 +20,7 @@ void FUNCTION_DECL(divide)(void);
 void FUNCTION_DECL(drop)(void);
 void FUNCTION_DECL(equal)(void);
 void FUNCTION_DECL(exit)(void);
+void FUNCTION_DECL(hexadecimal)(void);
 void FUNCTION_DECL(if)(void);
 void FUNCTION_DECL(json_rpc)(void);
 void FUNCTION_DECL(length)(void);

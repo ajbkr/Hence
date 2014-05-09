@@ -198,6 +198,10 @@ void __call_native_init__(void)
     item.data = hence_exit;
     (void) hsearch(item, ENTER);
 
+    item.key = "hexadecimal";
+    item.data = hence_hexadecimal;
+    (void) hsearch(item, ENTER);
+
     item.key = "if";
     item.data = hence_if;
     (void) hsearch(item, ENTER);
@@ -618,6 +622,22 @@ void hence_exit(void)
     }
 
     exit(x->i);
+    dirty_s(x);
+}
+
+void hence_hexadecimal(void)
+{
+    struct Heap_element *x;
+
+    check_stack_underflow();
+    x = &Heap[Stack[Stack_ptr]];
+    if (s_is_dirty(x)) {
+        sprintn(x->s, x->i);
+        clean_s(x);
+    }
+
+    x->i = (int) Strtol(x->s, NULL, 16);
+    clean_i(x);
     dirty_s(x);
 }
 
