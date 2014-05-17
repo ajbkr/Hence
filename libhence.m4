@@ -131,47 +131,20 @@ L$2:
     db 0
     db 0')dnl
 dnl
+ifelse(`
+ *
+ * addw -- add word in V2:V3 to word in V0:V1, place result in V0:V1
+ *
+')dnl
+define(addw,`')dnl
+dnl
 start:
     ld ve,__stklen__	; initialise stack pointer
 
-    ld v0,#ab
-    pushb
-    call foo
-    add ve,1
-
-    ld v0,#0f
-    ld v1,#ff
-    pushw
-    call test_fldi
-
-;    call main
+    call main
 
 halt:
     jp halt
-
-foo:
-    prolog(2)
-
-    ld v0,#42
-    fpokeb(-1)
-
-    ld v0,#69
-    fpokeb(-2)
-
-    fpeekb(-1)
-
-    fpeekb(-2)
-
-    fpeekb(1)
-
-    epilog
-
-test_fldi:
-    prolog(0)
-
-    fldi(1,__line__)
-
-    epilog
 
 __stk__:
 for(`x',0,__stklen__,`    db 0
@@ -262,7 +235,30 @@ Strtol:
     ret
 
 __init__:
-    ret
+    prolog(1)	; uint8_t i
+
+    ld v0,0	; i = 0
+    fpokeb(-1)
+
+    jp __init__L2
+__init__L1:
+    fpeekb(-1)
+    pushb
+    call free_stack_push
+    add ve,1
+
+    fpeekb(-1)	; ++i
+    add v0,1
+    fpokeb(-1)
+
+__init__L2:
+    fpeekb(-1)
+    ld v2,STACK_SIZE
+    sub v0,v2
+    se vf,0
+    jp __init__L1
+
+    epilog
 
 __call_native_init__:
     ret
@@ -274,15 +270,43 @@ __call_native__:
     ret
 
 __depth__:
+    ld v1,STACK_SIZE
+    ld i,Stack_ptr
+    ld v0,[i]
+    sub v1,v0
+    ld v0,0
+    pushw
+    call __pushi__
+    add ve,2
+    ret
+
+__popi__:
     ret
 
 __pop__:
     ret
 
-__push__:
-    ret
-
 __pushi__:
+    prolog(4)
+
+    call free_stack_pop	; x = free_stack_pop();
+    fpokew(-4)
+
+    ld i,0
+    ld i,0
+    ld i,0
+    ld i,0
+;    ld v2,hi(Heap)
+;    ld v3,lo(Heap)
+    fpeekw(-4)
+    addw
+    fpokew(-2)
+
+    ; XXX ...
+
+    epilog
+
+__push__:
     ret
 
 hence_and:
@@ -311,9 +335,6 @@ hence_bitwise_shift_right:
 hence_bitwise_xor:
     ret
 
-hence_call:
-    ret
-
 hence_concatenate:
     ret
 
@@ -335,6 +356,9 @@ hence_equal:
     ret
 
 hence_exit:
+    ret
+
+hence_hexadecimal:
     ret
 
 hence_if:
