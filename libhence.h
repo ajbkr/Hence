@@ -1,10 +1,13 @@
 #ifndef LIBHENCE_H
 #define LIBHENCE_H
 
-#include <inttypes.h>	/* int16_t, uint8_t */
+#include <inttypes.h>	/* int16_t, uint32_t, uint8_t */
 #include <stdlib.h>     /* NULL, strtol() */
 
-#define STACK_SIZE	10
+#define STACK_SIZE	4096
+
+#define STACK_T			uint32_t
+#define HEAP_ELEMENT_I_T	int16_t
 
 void runtime_error(const char *msg);
 
@@ -16,9 +19,9 @@ void __call_native__(void);
 
 void __depth__(void);
 char *__pop__(void);
-int16_t __popi__(void);
+HEAP_ELEMENT_I_T __popi__(void);
 void __push__(char *);
-void __pushi__(int16_t i);
+void __pushi__(HEAP_ELEMENT_I_T i);
 
 void hence_and(void);
 void hence_beep(void);
@@ -58,14 +61,14 @@ struct Function {
     void (*func)(void);
 };
 
-#define HEAP_ELEMENT_S_SIZE	37
+#define HEAP_ELEMENT_S_SIZE	253
 
 #define HEAP_ELEMENT_FLAGS_S_DIRTY	0
 #define HEAP_ELEMENT_FLAGS_I_DIRTY	1
 
 struct Heap_element {
     char s[HEAP_ELEMENT_S_SIZE];
-    int16_t i;
+    HEAP_ELEMENT_I_T i;
     uint8_t flags;
 } __attribute__((packed, aligned(4)));
 

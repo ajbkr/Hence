@@ -1,4 +1,3 @@
-#include <inttypes.h>	/* int16_t, uint8_t */
 #include <search.h>	/* hcreate(), hsearch() */
 #include <stdlib.h>	/* EXIT_FAILURE, NULL, exit(), strtol() */
 #include <string.h>	/* memcpy(), strcmp(), strlen(), strncpy() */
@@ -9,13 +8,13 @@
 
 #define FOREVER	for ( ; ; )
 
-uint8_t Stack[STACK_SIZE];
-uint8_t Stack_ptr = STACK_SIZE;
+STACK_T Stack[STACK_SIZE];
+STACK_T Stack_ptr = STACK_SIZE;
 
 struct Heap_element Heap[STACK_SIZE];
 
-uint8_t Free_stack[STACK_SIZE];
-uint8_t Free_stack_ptr = STACK_SIZE;
+STACK_T Free_stack[STACK_SIZE];
+STACK_T Free_stack_ptr = STACK_SIZE;
 
 #define NUM_CALL_NATIVE_FUNCS	30 * 1.25F	/* grep call-native h0.hence |
 						   wc -l */
@@ -49,7 +48,7 @@ void runtime_error(const char *msg)
     exit(EXIT_FAILURE);
 }
 
-static uint8_t free_stack_pop(void)
+static STACK_T free_stack_pop(void)
 {
     if (Free_stack_ptr >= STACK_SIZE) {
         runtime_error("free stack underflow");
@@ -57,7 +56,7 @@ static uint8_t free_stack_pop(void)
     return Free_stack[Free_stack_ptr++];
 }
 
-static void free_stack_push(uint8_t x)
+static void free_stack_push(STACK_T x)
 {
     if (Free_stack_ptr < 1) {
         runtime_error("free stack overflow");
@@ -65,13 +64,13 @@ static void free_stack_push(uint8_t x)
     Free_stack[--Free_stack_ptr] = x;
 }
 
-static uint8_t stack_pop(void)
+static STACK_T stack_pop(void)
 {
     check_stack_underflow();
     return Stack[Stack_ptr++];
 }
 
-static void stack_push(uint8_t x)
+static void stack_push(STACK_T x)
 {
     if (Stack_ptr < 1) {
         runtime_error("stack overflow");
@@ -125,7 +124,7 @@ static long Strtol(const char *nptr, char **endptr, int base)
 
 void __init__(void)
 {
-    uint8_t i;
+    STACK_T i;
 
     for (i = 0; i < STACK_SIZE; ++i) {
         free_stack_push(i);
@@ -301,10 +300,10 @@ void __depth__(void)
     __pushi__(STACK_SIZE - Stack_ptr);
 }
 
-int16_t __popi__(void)
+HEAP_ELEMENT_I_T __popi__(void)
 {
     struct Heap_element *e;
-    uint8_t x;
+    STACK_T x;
 
     x = stack_pop();
     e = &Heap[x];
@@ -318,17 +317,17 @@ int16_t __popi__(void)
 
 char *__pop__(void)
 {
-    uint8_t x;
+    STACK_T x;
 
     x = stack_pop();
     free_stack_push(x);
     return Heap[x].s;
 }
 
-void __pushi__(int16_t i)
+void __pushi__(HEAP_ELEMENT_I_T i)
 {
     struct Heap_element *e;
-    uint8_t x;
+    STACK_T x;
 
     x = free_stack_pop();
     e = &Heap[x];
@@ -341,7 +340,7 @@ void __pushi__(int16_t i)
 void __push__(char *s)
 {
     struct Heap_element *e;
-    uint8_t x;
+    STACK_T x;
 
     x = free_stack_pop();
     e = &Heap[x];
@@ -539,7 +538,7 @@ void hence_concatenate(void)
 void hence_debug(void)
 {
     struct Heap_element *x;
-    uint8_t i;
+    STACK_T i;
 
     (void) printf("[");
     for (i = STACK_SIZE - 1; i >= Stack_ptr; --i) {
@@ -647,7 +646,7 @@ void hence_if(void)
         false_func[HEAP_ELEMENT_S_SIZE];
     char result[HEAP_ELEMENT_S_SIZE];
     struct Heap_element *x, *y, *z, *zz;
-    int16_t i;
+    HEAP_ELEMENT_I_T i;
 
     check_stack_underflow();
     z = &Heap[Stack[Stack_ptr]];
@@ -867,8 +866,6 @@ void hence_read_line(void)
 void hence_roll(void)
 {
     struct Heap_element *n;
-/*    int16_t n_i;
-    uint8_t i, x;*/
     int i, n_i, x;
 
     check_stack_underflow();
